@@ -1,0 +1,22 @@
+{
+  "name": "skill-sample-nodejs-buttons-game-templates",
+  "version": "1.0.0",
+  "description": "Echo Button Game Template Skill",
+  "main": "index.js",
+  "dependencies": {
+    "alexa-sdk": "^1.0.15",
+    "sprintf-js": "^1.1.1",
+    "string-similarity": "^1.2.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "alexa",
+    "skill",
+    "echo buttons"
+  ],
+  "author": "Amazon.com",
+  "license": "ADSL"
+}

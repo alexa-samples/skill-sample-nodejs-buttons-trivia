@@ -1,0 +1,48 @@
+{
+  "manifest": {
+    "publishingInformation": {
+      "locales": {
+        "en-US": {
+          "summary": "A trivia game featuring Echo Buttons for competitive play.",
+          "examplePhrases": [
+            "Alexa, open button trivia",
+            "Alexa, start button trivia",
+            "Alexa, ask button trivia to start a new game"            
+          ],
+          "name": "Button Trivia Template",
+          "description": "This is a fast-paced, trivia-style game, featuring Echo Buttons. Challenge your friends, or play by yourself."
+        }
+      },
+      "isAvailableWorldwide": false,
+      "category": "KNOWLEDGE_AND_TRIVIA",
+      "distributionCountries": [
+        "US"
+      ],
+      "gadgetSupport": {
+        "maxGadgetButtons": 4,
+        "minGadgetButtons": 1,
+        "requirement": "REQUIRED",
+        "numPlayersMin": 1
+      }
+    },
+    "apis": {
+      "custom": {
+        "endpoint": {
+          "sourceDir": "lambda/custom"
+        },
+        "interfaces": [
+          {
+            "type": "RENDER_TEMPLATE"
+          },
+          {
+            "type": "GAME_ENGINE"
+          },
+          {
+            "type": "GADGET_CONTROLLER"
+          }
+        ]
+      }
+    },
+    "manifestVersion": "1.0"
+  }
+}

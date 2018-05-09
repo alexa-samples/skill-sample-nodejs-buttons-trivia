@@ -1,0 +1,360 @@
+{
+  "interactionModel": {
+    "languageModel": {
+      "invocationName": "buttons trivia",
+      "intents": [
+        {
+          "name": "AMAZON.CancelIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.HelpIntent",
+          "samples": [
+            "how do I play this game",
+            "how is this game played",
+            "how do I play this"            
+          ]
+        },
+        {
+          "name": "AMAZON.YesIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.NoIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.StopIntent",
+          "samples": []
+        },
+        {
+          "name": "PlayerCount",
+          "slots": [
+            {
+              "name": "players",
+              "type": "AMAZON.NUMBER"
+            }
+          ],
+          "samples": [
+            "{players}",
+            "{players} players",
+            "there are {players}",
+            "there are {players} players",
+            "there are {players} of us",
+            "we have {players}",
+            "we have {players} players",
+            "there will be {players}",
+            "there will be {players} players"
+          ]
+        },        
+        {
+          "name": "AnswerQuestionIntent",
+          "slots": [
+            {
+              "name": "answers",
+              "type": "answers"
+            }
+          ],
+          "samples": [
+            "a {answers}",
+            "the {answers}",
+            "the answer is {answers}",
+            "my answers is {answers}",
+            "is it {answers}",
+            "it is {answers}",
+            "it was {answers}",
+            "it might be {answers}",
+            "i think it is {answers}",
+            "i think it was {answers}",
+            "i think it might be {answers}",
+            "i think the answer is {answers}",
+            "i think the answer might be {answers}"
+          ]
+        },
+        {
+          "name": "AnswerOnlyIntent",
+          "slots": [
+            {
+              "name": "answers",
+              "type": "answers"
+            }
+          ],
+          "samples": [
+            "{answers}"            
+          ]
+        },
+        {
+          "name": "PlayGame",
+          "samples": [
+            "play",
+            "play the game",
+            "play a game",
+            "play a new game",
+            "I'm ready to play",
+            "let's play",
+            "start a new game",
+            "start a game",
+            "start the game",
+            "let's start the game",
+            "ready to play",
+            "ready to start",
+            "let's start",
+            "let's begin",
+            "begin the game",
+            "get started"
+          ]
+        },
+        {
+          "name": "DontKnowIntent",
+          "samples": [
+            "I don't know",
+            "don't know",
+            "I am not sure",
+            "I have not idea",
+            "I don't understand",
+            "I've got no clue",
+            "I've got no idea",
+            "I have no clue",
+            "I have no idea",
+            "I am clueless"            
+          ]
+        },        
+        {
+          "name": "AMAZON.MoreIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.NavigateHomeIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.NavigateSettingsIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.NextIntent",
+          "samples": [
+            "skip",
+            "skip this question",
+            "skip this one",
+            "next question",
+            "go to next question",
+            "go to the next question",
+            "I give up",
+            "we give up"
+          ]
+        },
+        {
+          "name": "AMAZON.PageUpIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.PageDownIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.PreviousIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.ScrollRightIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.ScrollDownIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.ScrollLeftIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.ScrollUpIntent",
+          "samples": []
+        }
+      ],
+      "types": [
+        {
+          "values": [
+            {
+              "name": {
+                "value": "fox"
+              }
+            },
+            {
+              "name": {
+                "value": "wolf"
+              }
+            },
+            {
+              "name": {
+                "value": "cat"
+              }
+            },
+            {
+              "name": {
+                "value": "dog"
+              }
+            },
+            {
+              "name": {
+                "value": "caribou"
+              }
+            },
+            {
+              "name": {
+                "value": "polar bear"
+              }
+            },
+            {
+              "name": {
+                "value": "narwhal"
+              }
+            },
+            {
+              "name": {
+                "value": "penguin"
+              }
+            },
+            {
+              "name": {
+                "value": "orangutan"
+              }
+            },
+            {
+              "name": {
+                "value": "elephant"
+              }
+            },
+            {
+              "name": {
+                "value": "dolphin"
+              }
+            },
+            {
+              "name": {
+                "value": "blue whale"
+              }
+            },
+            {
+              "name": {
+                "value": "janet"
+              }
+            },
+            {
+              "name": {
+                "value": "jenny"
+              }
+            },
+            {
+              "name": {
+                "value": "joey"
+              }
+            },
+            {
+              "name": {
+                "value": "adder"
+              }
+            },
+            {
+              "name": {
+                "value": "copperhead"
+              }
+            },
+            {
+              "name": {
+                "value": "coral snake"
+              }
+            },
+            {
+              "name": {
+                "value": "cobra"
+              }
+            },
+            {
+              "name": {
+                "value": "mammals"
+              }
+            },
+            {
+              "name": {
+                "value": "reptiles"
+              }
+            },
+            {
+              "name": {
+                "value": "black with white stripes"
+              }
+            },
+            {
+              "name": {
+                "value": "white with black stripes"
+              }
+            },
+            {
+              "name": {
+                "value": "shell"
+              }
+            },
+            {
+              "name": {
+                "value": "fish"
+              }
+            },
+            {
+              "name": {
+                "value": "arachnid"
+              }
+            },
+            {
+              "name": {
+                "value": "crustacean"
+              }
+            },
+            {
+              "name": {
+                "value": "squirrels"
+              }
+            },
+            {
+              "name": {
+                "value": "echidnas"
+              }
+            },
+            {
+              "name": {
+                "value": "dolphins"
+              }
+            },
+            {
+              "name": {
+                "value": "spiny anteaters"
+              }
+            },
+            {
+              "name": {
+                "value": "frat"
+              }
+            },
+            {
+              "name": {
+                "value": "den"
+              }
+            },
+            {
+              "name": {
+                "value": "pride"
+              }
+            },
+            {
+              "name": {
+                "value": "pack"
+              }
+            }
+          ],
+          "name": "answers"
+        }
+      ]
+    }
+  }
+}
