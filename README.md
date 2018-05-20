@@ -5,7 +5,7 @@
 
 **Important: The Gadgets Skill API is in beta and is subject to change at any time without notice. We welcome your feedback.**
 
-This template offers a starting point for you to build your own Trivia Game skill featuring Echo Buttons. 
+This template offers a starting point for you to build your own Trivia Game skill featuring [Echo Buttons](https://www.amazon.com/Echo-Buttons-Alexa-Gadget-Pack/dp/B072C4KCQH). 
 The template implements [roll call](https://developer.amazon.com/docs/gadget-skills/discover-echo-buttons.html#goals) and a game loop that handles asking and answering trivia questions. It handles [receiving Echo Button events](https://developer.amazon.com/docs/gadget-skills/receive-echo-button-events.html) as well as [animating the Echo Buttons lights](https://developer.amazon.com/docs/gadget-skills/control-echo-buttons.html#animate).
 
 **Note** You may use this template as a starting point to build your own trivia game skill.
