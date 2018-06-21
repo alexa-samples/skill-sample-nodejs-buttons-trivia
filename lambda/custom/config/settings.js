@@ -38,7 +38,7 @@ module.exports = (function() {
      *          correct answer to be considered correct. Used with the string-similarity package
      *          See github readme for setup instructions
      *      MAX_ANSWERS_PER_QUESTION - Maximum number of answers allowed for each question.
-     *      SUFFLE_QUESTIONS - if enabled, questions are presented in randomized order, otherwise
+     *      SHUFFLE_QUESTIONS - if enabled, questions are presented in randomized order, otherwise
      *          each question is presented in the same answer as they are listed in the questions file.
      */
     const GAME_OPTIONS = {
@@ -47,7 +47,7 @@ module.exports = (function() {
         QUESTIONS_PER_ROUND: 2,
         ANSWER_SIMILARITY: .60,
         MAX_ANSWERS_PER_QUESTION: 2,
-        SUFFLE_QUESTIONS: true
+        SHUFFLE_QUESTIONS: true
     };
 
     /**
@@ -117,17 +117,17 @@ module.exports = (function() {
      */
     const AUDIO = Object.freeze({
         WAITING_FOR_ROLL_CALL_AUDIO: 
-            "<audio src='https://s3.amazonaws.com/ask-soundlibrary/foley/amzn_sfx_rhythmic_ticking_30s_01.mp3'/>",
+            "<audio src='https://s3.amazonaws.com/ask-soundlibrary/ui/gameshow/amzn_ui_sfx_gameshow_countdown_loop_32s_full_01.mp3'/>",
         ROLL_CALL_COMPLETE: 
-            "<audio src='https://s3.amazonaws.com/alexa-ml/sounds/sound-library/Beeps_and_Bloops/Intro_2.mp3'/>",
+            "<audio src='https://s3.amazonaws.com/ask-soundlibrary/ui/gameshow/amzn_ui_sfx_gameshow_intro_01.mp3'/>",
         WAITING_FOR_BUZZ_IN_AUDIO: 
-            "<audio src='https://s3.amazonaws.com/ask-soundlibrary/foley/amzn_sfx_rhythmic_ticking_30s_01.mp3'/>",
+            "<audio src='https://s3.amazonaws.com/ask-soundlibrary/ui/gameshow/amzn_ui_sfx_gameshow_waiting_loop_30s_01.mp3'/>",
         BUZZ_IN_AUDIO: 
-            "<audio src='https://s3.amazonaws.com/alexa-ml/sounds/sound-library/Beeps_and_Bloops/Bell_2.mp3'/>",
+            "<audio src='https://s3.amazonaws.com/ask-soundlibrary/ui/gameshow/amzn_ui_sfx_gameshow_neutral_response_01.mp3'/>",
         CORRECT_ANSWER_AUDIO: 
-            "<audio src='https://s3.amazonaws.com/alexa-ml/sounds/sound-library/Crowds/Cheer_4.mp3'/>",
+            "<audio src='https://s3.amazonaws.com/ask-soundlibrary/ui/gameshow/amzn_ui_sfx_gameshow_positive_response_02.mp3'/>",
         INCORRECT_ANSWER_AUDIO: 
-            "<audio src='https://s3.amazonaws.com/alexa-ml/sounds/sound-library/Crowds/Crowd_Boo_1.mp3'/>"
+            "<audio src='https://s3.amazonaws.com/ask-soundlibrary/ui/gameshow/amzn_ui_sfx_gameshow_negative_response_02.mp3'/>"
     });
 
     /**

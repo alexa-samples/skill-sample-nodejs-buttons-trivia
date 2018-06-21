@@ -539,7 +539,7 @@ const Game = {
                 
         if (!this.attributes.orderedQuestions || 
             (currentQuestion === 1 && !('repeat' in this.attributes))) {
-            if (settings.GAME.SUFFLE_QUESTIONS) {
+            if (settings.GAME.SHUFFLE_QUESTIONS) {
                 logger.log('DEBUG', 'GamePlay: producing ordered question list for new game (using shuffling)!');
                 // if this is the first question, then shuffle the questions
                 let orderedQuestions = helper.shuffleList(trivia.questions.map(q => q.index))
