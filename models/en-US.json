@@ -88,11 +88,9 @@
           "samples": [
             "play",
             "play the game",
-            "play a game",
-            "play a new game",
+            "play a game",            
             "I'm ready to play",
-            "let's play",
-            "start a new game",
+            "let's play",            
             "start a game",
             "start the game",
             "let's start the game",
@@ -118,7 +116,20 @@
             "I have no idea",
             "I am clueless"            
           ]
-        },        
+        },
+        {
+          "name": "StartNewGameIntent",
+          "samples": [
+            "start new game",
+            "play a new game",
+            "start a new game",
+            "begin a new game",
+            "start game",
+            "begin new game",
+            "new game",
+            "start over"                    
+          ]
+        },      
         {
           "name": "AMAZON.MoreIntent",
           "samples": []

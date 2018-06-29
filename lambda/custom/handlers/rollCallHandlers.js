@@ -29,6 +29,10 @@ const rollCallHandlers = Alexa.CreateStateHandler(settings.STATE.ROLLCALL_STATE,
         logger.log('DEBUG', 'STATES.ROLLCALL_STATE - PlayGame');     
         this.emit('PlayGame', 'ASK_TO_RESUME');
     },
+    'StartNewGameIntent' : function() {
+        logger.log('DEBUG', 'STATES.ROLLCALL_STATE - StartNewGameIntent');                
+        this.emit('StartNewGameIntent');
+    },
     'DontKnowIntent': function() {
         logger.log('DEBUG', "STATES.ROLLCALL_STATE - DontKnowIntent");         
         this.emitWithState('AMAZON.HelpIntent');

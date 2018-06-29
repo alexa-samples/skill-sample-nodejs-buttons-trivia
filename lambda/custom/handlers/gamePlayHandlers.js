@@ -50,6 +50,17 @@ const gameLoopHandlers = Alexa.CreateStateHandler(settings.STATE.GAME_LOOP_STATE
         this.attributes.accumulatedSpeech = [ outputSpeech + "<break time='1s'/>" ];        
         this.emitWithState('AskQuestion');
     },
+    'StartNewGameIntent' : function() {
+        logger.log('DEBUG', 'STATE' + settings.STATE.GAME_LOOP_STATE + '- StartNewGameIntent');
+        
+        this.attributes.resume = false;
+        delete this.attributes.correct;
+        delete this.attributes.answeringButton;
+        delete this.attributes.answeringPlayer;
+        delete this.attributes.waitingForAnswer;
+        this.attributes.currentQuestion = 0;
+        this.emit('StartRollCall');
+    },
     'DontKnowIntent': function() {
         logger.log('DEBUG', 'STATE' + settings.STATE.GAME_LOOP_STATE + ' - DontKnowIntent');
         this.emitWithState('AMAZON.NextIntent');

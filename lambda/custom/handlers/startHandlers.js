@@ -58,6 +58,18 @@ const startHandlers = Alexa.CreateStateHandler(settings.STATE.DEFAULT_STATE, {
         }
     },
 
+    'StartNewGameIntent' : function() {
+        logger.log('DEBUG', 'DEFAULT_STATE - StartNewGameIntent');
+        
+        this.attributes.resume = false;
+        delete this.attributes.correct;
+        delete this.attributes.answeringButton;
+        delete this.attributes.answeringPlayer;
+        delete this.attributes.waitingForAnswer;
+        this.attributes.currentQuestion = 0;
+        this.emit('StartRollCall');
+    },
+
     /**
      * Invoked when a user asks for help from a new session
      * like "Alexa ask <invocation name> for help"
