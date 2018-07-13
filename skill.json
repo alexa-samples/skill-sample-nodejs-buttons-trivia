@@ -9,6 +9,26 @@
             "Alexa, start button trivia",
             "Alexa, ask button trivia to start a new game"            
           ],
+          "keywords": [
+            "buttons",
+            "games",
+            "trivia"
+          ],
+          "name": "Button Trivia Template",
+          "description": "This is a fast-paced, trivia-style game, featuring Echo Buttons. Challenge your friends, or play by yourself."
+        },
+        "en-GB": {
+          "summary": "A trivia game featuring Echo Buttons for competitive play.",
+          "examplePhrases": [
+            "Alexa, open button trivia",
+            "Alexa, start button trivia",
+            "Alexa, ask button trivia to start a new game"            
+          ],
+          "keywords": [
+            "buttons",
+            "games",
+            "trivia"
+          ],
           "name": "Button Trivia Template",
           "description": "This is a fast-paced, trivia-style game, featuring Echo Buttons. Challenge your friends, or play by yourself."
         }
@@ -16,7 +36,7 @@
       "isAvailableWorldwide": false,
       "category": "KNOWLEDGE_AND_TRIVIA",
       "distributionCountries": [
-        "US"
+        "US", "GB"
       ],
       "gadgetSupport": {
         "maxGadgetButtons": 4,
@@ -40,7 +60,19 @@
           {
             "type": "GADGET_CONTROLLER"
           }
-        ]
+        ],
+        "regions": {
+          "NA": {    
+            "endpoint": {
+              "sourceDir": "lambda/custom"
+            }      
+          },
+          "EU": {
+            "endpoint": {
+              "sourceDir": "lambda/custom"
+            }
+          }
+        }
       }
     },
     "manifestVersion": "1.0"

@@ -8,8 +8,20 @@
         "manifest": {
           "apis": {
             "custom": {
-              "endpoint": {
+              "endpoint": {                    
                 "uri": "ask-custom-echo-button-trivia-skill"
+              }, 
+              "regions": {
+                "NA": {
+                  "endpoint": {                    
+                    "uri": "ask-custom-echo-button-trivia-skill"
+                  }
+                },
+                "EU": {
+                  "endpoint": {                    
+                    "uri": "ask-custom-echo-button-trivia-skill"
+                  }
+                }
               }
             }
           }
@@ -24,8 +36,20 @@
         "manifest": {
           "apis": {
             "custom": {
-              "endpoint": {
+              "endpoint": {                    
                 "uri": "ask-custom-echo-button-trivia-skill"
+              },           
+              "regions": {
+                "NA": {
+                  "endpoint": {                    
+                    "uri": "ask-custom-echo-button-trivia-skill"
+                  }
+                },
+                "EU": {
+                  "endpoint": {                    
+                    "uri": "ask-custom-echo-button-trivia-skill"
+                  }
+                }
               }
             }
           }

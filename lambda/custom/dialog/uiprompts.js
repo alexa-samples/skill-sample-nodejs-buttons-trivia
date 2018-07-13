@@ -337,3 +337,4 @@ function prompts({ key, params } = {}) {
     }
 }
 module.exports.prompts = prompts;
+module.exports.parseLocale = parseLocale;

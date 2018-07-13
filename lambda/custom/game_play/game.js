@@ -269,6 +269,9 @@ const Game = {
      */
     handleGameInputEvent: function(gameEngineEvents) {    
         logger.log('DEBUG', "GamePlay - handleGameInputEvent: " + JSON.stringify(gameEngineEvents));
+        let requestLocale = UI.parseLocale({locale: 
+            (this.event && this.event.request) ? this.event.request.locale : ''});
+        
         /**
          * For format of the GameEngine.InputHandlerEvent see
          * https://developer.amazon.com/docs/gadget-skills/receive-echo-button-events.html#receive
@@ -318,7 +321,8 @@ const Game = {
             case 'answer_interstitial_event': {         
                 let currentQuestion = parseInt(this.attributes.currentQuestion || 1, 10);
                 let shuffledQuestionIndex = this.attributes.orderedQuestions[currentQuestion - 1];
-                let triviaQuestion = trivia.questions.find( q => q.index == shuffledQuestionIndex);
+                let localizedQuestions = trivia.questions[requestLocale.language][requestLocale.territory];
+                let triviaQuestion = localizedQuestions.find( q => q.index == shuffledQuestionIndex);
                 
                 let { displayTitle } = this.getUIPrompts({
                     key: 'ASK_QUESTION_DISPLAY',
@@ -360,6 +364,9 @@ const Game = {
      */
     answerQuestion: function() {
         logger.log('DEBUG', 'GamePlay: answerQuestion');
+        let requestLocale = UI.parseLocale({locale: 
+            (this.event && this.event.request) ? this.event.request.locale : ''});
+        
         // Sets up a place for us to gather speech input
         Game.initializeAccumulatedSpeech.call(this);
         
@@ -399,7 +406,8 @@ const Game = {
         // get the current question from the question bank so we can compare answers
         let currentQuestionIndex = parseInt(this.attributes.currentQuestion || 1, 10);
         let shuffledQuestionIndex = this.attributes.orderedQuestions[currentQuestionIndex-1];
-        let currentQuestion = trivia.questions.find( q => q.index == shuffledQuestionIndex);
+        let localizedQuestions = trivia.questions[requestLocale.language][requestLocale.territory];
+        let currentQuestion = localizedQuestions.find( q => q.index == shuffledQuestionIndex);
         // get the answers
         let answers = currentQuestion.answers.map(a => helper.normalizeAnswer(a));
         // get the correct answer
@@ -528,6 +536,8 @@ const Game = {
      */
     askQuestion : function(isFollowingAnswer) {
         logger.log('DEBUG', 'GamePlay: askQuestion (currentQuestion = ' + this.attributes.currentQuestion + ')');                
+        let requestLocale = UI.parseLocale({locale: 
+            (this.event && this.event.request) ? this.event.request.locale : ''});
 
         let currentQuestion;
         if ( 'currentQuestion' in this.attributes ) {
@@ -536,25 +546,26 @@ const Game = {
             currentQuestion = 1;
             this.attributes.currentQuestion = 1;
         }
-                
+              
+        let localizedQuestions = trivia.questions[requestLocale.language][requestLocale.territory];
         if (!this.attributes.orderedQuestions || 
             (currentQuestion === 1 && !('repeat' in this.attributes))) {
             if (settings.GAME.SHUFFLE_QUESTIONS) {
                 logger.log('DEBUG', 'GamePlay: producing ordered question list for new game (using shuffling)!');
-                // if this is the first question, then shuffle the questions
-                let orderedQuestions = helper.shuffleList(trivia.questions.map(q => q.index))
+                // if this is the first question, then shuffle the questions                
+                let orderedQuestions = helper.shuffleList(localizedQuestions.map(q => q.index))
                         .slice(0, settings.GAME.QUESTIONS_PER_GAME);
                 // and store the ordered list of questions in the attributes           
                 this.attributes.orderedQuestions = orderedQuestions;    
             } else {
-                logger.log('DEBUG', 'GamePlay: producing ordered question list for new game (shuffling disabled)!');
-                this.attributes.orderedQuestions = trivia.questions.map(q => q.index)
+                logger.log('DEBUG', 'GamePlay: producing ordered question list for new game (shuffling disabled)!');                
+                this.attributes.orderedQuestions = localizedQuestions.map(q => q.index)
                         .slice(0, settings.GAME.QUESTIONS_PER_GAME);
             }        
         }
 
-        let shuffledQuestionIndex = this.attributes.orderedQuestions[currentQuestion - 1];
-        let nextQuestion = trivia.questions.find( q => q.index == shuffledQuestionIndex);
+        let shuffledQuestionIndex = this.attributes.orderedQuestions[currentQuestion - 1];        
+        let nextQuestion = localizedQuestions.find( q => q.index == shuffledQuestionIndex);
         logger.log('DEBUG', 'Ask question: ' + currentQuestion + ' of ' + settings.GAME.QUESTIONS_PER_GAME 
             + ', next question: ' + JSON.stringify(nextQuestion, null, 2));
         if (!nextQuestion || currentQuestion > settings.GAME.QUESTIONS_PER_GAME) {
