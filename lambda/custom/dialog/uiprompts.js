@@ -21,15 +21,11 @@ const UI = Object.freeze({
     'en': { 
       'us': {
         'GENERAL_HELP': {
-            outputSpeech: ['This is an example game for the new Echo Buttons. ' +                      
-                           'It shows examples of how to perform roll call, ' + 
-                           'ensuring players are registered for the game, ' +
-                           'and how to provide a scoreboard, and game summary. ' +
-                           'To get started just ask me to play a game. ' +
-                           'What would you like to do?'],
+            outputSpeech: ['To get started just ask me to play a game. ' +                      
+                           'What would you like to do? '],
             reprompt: ["Sorry, I didn't catch that, what would you like to do next?"],
             displayTitle: [GAME_TITLE + ' - Help'],
-            displayText: ['This is an example game for the new Echo Buttons. ' +
+            displayText: ['This is a trivia game for Echo Buttons. ' +
                           'To get started just ask me to play a game.']
         },    
         'UNHANDLED_REQUEST': {
@@ -79,7 +75,7 @@ const UI = Object.freeze({
                       + settings.GAME.MAX_PLAYERS + " players."]
         },
         'ROLL_CALL_HELP': {
-            outputSpeech: ['This is an example game for the new Echo Buttons. ' +  
+            outputSpeech: ['This is a trivia game for Echo Buttons. ' +  
                            'In order to play the game, each player must check in by ' +
                            'pressing an Echo Button. Would you like to continue and ' +
                            'check players in for the game?'], 
@@ -89,7 +85,7 @@ const UI = Object.freeze({
                           'pressing an Echo Button. Would you like to continue?']
         },
         'ROLL_CALL_EXIT_HELP': {
-            outputSpeech: ['This is an example game for the new Echo Buttons. ' +  
+            outputSpeech: ['This is a trivia game for Echo Buttons. ' +  
                         'In order to play the game, each player must check in by ' +
                         'pressing an Echo Button. Would you like to continue and ' +
                         'check players in for the game?'], 
@@ -227,7 +223,7 @@ const UI = Object.freeze({
             displayText: ["Get ready to start!"]
         },
         'GAME_PLAY_HELP': {
-            outputSpeech: ['This is an example trivia game. ' +                      
+            outputSpeech: ['This is a trivia game for Echo Buttons. ' +                      
                            'During the game, I will ask one question at a time. ' + 
                            'If you know the answer, press your button for a chance ' +
                            'to answer. You will earn a point for each question you ' +
