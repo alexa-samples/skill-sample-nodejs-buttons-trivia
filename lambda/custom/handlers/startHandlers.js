@@ -1,165 +1,201 @@
 /*
-* Copyright 2018 Amazon.com, Inc. and its affiliates. All Rights Reserved.
-* Licensed under the Amazon Software License (the "License").
-* You may not use this file except in compliance with the License.
-* A copy of the License is located at
-* http://aws.amazon.com/asl/
-* or in the "license" file accompanying this file. This file is distributed
-* on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
-* express or implied. See the License for the specific language governing
-* permissions and limitations under the License.
-*/
-
-const Alexa             = require('alexa-sdk');
-const UI                = require('../dialog/uiprompts.js');
-const RollCall          = require('../utils/rollcall.js'); 
-const logger            = require('../utils/logger.js');
-const settings          = require('../config/settings.js');
-const makePlainText     = Alexa.utils.TextUtils.makePlainText;
-const makeImage         = Alexa.utils.ImageUtils.makeImage;
-/**
- * DEFAULT_STATE
+ * Copyright 2018 Amazon.com, Inc. and its affiliates. All Rights Reserved.
+ * Licensed under the Amazon Software License (the "License").
+ * You may not use this file except in compliance with the License.
+ * A copy of the License is located at
+ * http://aws.amazon.com/asl/
+ * or in the "license" file accompanying this file. This file is distributed
+ * on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ * express or implied. See the License for the specific language governing
+ * permissions and limitations under the License.
  */
-const startHandlers = Alexa.CreateStateHandler(settings.STATE.DEFAULT_STATE, {
-    'LaunchRequest': function() {
-        logger.log('DEBUG', 'DEFAULT_STATE - LaunchRequest');
-        this.emit('NewSession');
-    },
 
-    /**
-     * Invoked when a user says 'play a game' or other variant
-     */
-    'PlayGame': function(promptKey) {        
+const RollCall = require('../utils/rollcall.js');
+const logger = require('../utils/logger.js');
+const settings = require('../config/settings.js');
+
+/**
+ * Handling everything currently in or returning to the DEFAULT state.
+ */
+const startHandlers = {
+  /**
+   * Invoked when a user says 'open' or 'play' or some other variant
+   * when in DEFAULT or ROLLCALL state
+   */
+  LaunchPlayGameRequest: {
+    canHandle(handlerInput) {
+      logger.log('DEBUG', 'DEFAULT.LaunchRequest: canHandle');
+      let {
+        attributesManager,
+        requestEnvelope
+      } = handlerInput;
+      return (requestEnvelope.request.type === 'LaunchRequest' ||
+          requestEnvelope.request.type === 'NewSession' || // @TODO NewSession Removed in SDKv2?
+          (requestEnvelope.request.type === 'IntentRequest' &&
+            requestEnvelope.request.intent.name === 'PlayGame'));
+    },
+    handle(handlerInput) {
+      logger.log('DEBUG', 'DEFAULT.LaunchRequest: handle');
+      let {
+        attributesManager,
+        requestEnvelope,
+        responseBuilder
+      } = handlerInput;
+      let ctx = attributesManager.getRequestAttributes();
+      let sessionAttributes = attributesManager.getSessionAttributes();
+      let messageKey = 'ASK_TO_RESUME';
+
+      /**
+       * If it's a Launch then clean out the session attributes that may have carried over
+       * and change the verbal response
+       */
+      if (requestEnvelope.request.type === 'LaunchRequest' ||
+        requestEnvelope.request.type === 'NewSession') {
+        delete sessionAttributes.expectingEndSkillConfirmation;
+        delete sessionAttributes.resume;        
+        delete sessionAttributes.inputHandlerId;
+        delete sessionAttributes.correct;
+        delete sessionAttributes.answeringButton;
+        delete sessionAttributes.answeringPlayer;
+        delete sessionAttributes.waitingForAnswer;
+        sessionAttributes.gameStarting = true;
+        messageKey = 'ASK_TO_RESUME_NEW_SESSION';
+      }
+
+      /**
+       * Set to game starting state.
+       */
+      sessionAttributes.gameStarting = true;
+      sessionAttributes.STATE = settings.STATE.ROLLCALL_STATE;
+
+      let playerCount = sessionAttributes.playerCount;
+      let rollCallComplete = 'rollCallComplete' in sessionAttributes && playerCount;
+      let gameInProgress = (sessionAttributes.currentQuestion || 0) <= settings.GAME.QUESTIONS_PER_GAME;
+
+      logger.log('DEBUG', 'DEFAULT_STATE - PlayGame (playerCount = ' + playerCount +
+        ', rollCallComplete = ' + rollCallComplete +
+        ', currentQuestion = ' + sessionAttributes.currentQuestion + ')');
+
+      if (rollCallComplete && gameInProgress) {
         /**
-         * If they have a game in progress, ask to see if they want to resume the game
-         */    
-        let playerCount = this.attributes.playerCount;
-        let rollCallComplete = 'rollCallComplete' in this.attributes && playerCount;
-        let gameInProgress = (this.attributes.currentQuestion || 0) <= settings.GAME.QUESTIONS_PER_GAME;
-        logger.log('DEBUG', 'DEFAULT_STATE - PlayGame (playerCount = ' + playerCount 
-            + ', rollCallComplete = ' + rollCallComplete 
-            + ', currentQuestion = ' + this.attributes.currentQuestion + ')');
-
-        if (rollCallComplete && gameInProgress) {
-            promptKey = promptKey || 'ASK_TO_RESUME';
-            let uiPrompts = this.getUIPrompts({
-                key: promptKey,
-                params: {
-                    'player_count': playerCount
-            }});
-            this.display(uiPrompts);
-            this.response.speak(uiPrompts.outputSpeech).listen(uiPrompts.reprompt);
-
-            // ask to resume, and go to RollCall state
-            this.attributes.STATE = settings.STATE.ROLLCALL_STATE;
-            this.emit('GlobalResponseReady', { 'openMicrophone': true });
-        } else {
-            this.emit('StartRollCall');
-        }
-    },
-
-    'StartNewGameIntent' : function() {
-        logger.log('DEBUG', 'DEFAULT_STATE - StartNewGameIntent');
-        
-        this.attributes.resume = false;
-        delete this.attributes.correct;
-        delete this.attributes.answeringButton;
-        delete this.attributes.answeringPlayer;
-        delete this.attributes.waitingForAnswer;
-        this.attributes.currentQuestion = 0;
-        this.emit('StartRollCall');
-    },
-
-    /**
-     * Invoked when a user asks for help from a new session
-     * like "Alexa ask <invocation name> for help"
-     */
-    'NewSession': function() {
-        logger.log('DEBUG', 'DEFAULT_STATE - NewSession Handler');
-        if (this.event.request.intent && 
-            this.event.request.intent.name && 
-            this.event.request.intent.name === 'AMAZON.HelpIntent' ){
-
-            this.emit('AMAZON.HelpIntent');
-            return;
-        }
-        
-        /*
-         * delete attributes that may have carried over from a previous session
+         * Ask to resume an existing game
          */
-        delete this.attributes.expectingEndSkillConfirmation;
-        delete this.attributes.resume;        
-        delete this.attributes.inputHandlerId;
-        delete this.attributes.correct;
-        delete this.attributes.answeringButton;
-        delete this.attributes.answeringPlayer;
-        delete this.attributes.waitingForAnswer;
-        this.attributes.gameStarting = true;
-
+        let responseMessage = ctx.t(messageKey, {
+          'player_count': playerCount
+        });
+        ctx.outputSpeech.push(responseMessage.outputSpeech);
+        ctx.reprompt.push(responseMessage.reprompt);
+        ctx.render(handlerInput, responseMessage);
+        ctx.openMicrophone = true;
+      } else {
         /**
-         * If they are starting a new session but have a game in progress,
-         * ask to see if they want to resume the game
+         * Start a new game
          */
-        this.emit('PlayGame', 'ASK_TO_RESUME_NEW_SESSION');        
+        RollCall.start(handlerInput);
+      }
+
+      return responseBuilder.getResponse();
+    }
+  },
+  /**
+   * Result of the prompt to see if they want to 
+   * resume their previous game. Reset the game state and
+   * pass a variable to roll call (i.e. sessionAttributes.resume)
+   * so we can affect the TTS to be more natural and sound different 
+   * from the regular game start
+   */
+  NoHandler: {
+    canHandle(handlerInput) {
+      logger.log('DEBUG', 'DEFAULT.NoHandler: canHandle');
+      let {
+        attributesManager,
+        requestEnvelope
+      } = handlerInput;
+      return requestEnvelope.request.type === 'IntentRequest' &&
+        requestEnvelope.request.intent.name === 'AMAZON.NoIntent' &&
+        (attributesManager.getSessionAttributes().STATE === settings.STATE.DEFAULT_STATE);
     },
-
-    'AMAZON.HelpIntent': function() {        
-        logger.log('DEBUG', "DEFAULT_STATE - AMAZON.HelpIntent");
-
-        let {outputSpeech, reprompt} = this.getUIPrompts({
-            key: 'GENERAL_HELP'
-        });
-        this.response.speak(outputSpeech).listen(reprompt);        
-        this.emit('GlobalResponseReady', { 'openMicrophone': true });
+    handle(handlerInput) {
+      logger.log('DEBUG', 'DEFAULT.NoHandler: handle');
+      let {
+        attributesManager,
+        responseBuilder
+      } = handlerInput;
+      let sessionAttributes = attributesManager.getSessionAttributes();
+      sessionAttributes.resume = false;
+      RollCall.start(handlerInput);
+      return responseBuilder.getResponse();
+    }
+  },
+  /**
+   * Help and DontKnow both respond with general help
+   */
+  HelpDontKnowHandler: {
+    canHandle(handlerInput) {
+      logger.log('DEBUG', 'DEFAULT.HelpDontKnowHandler: canHandle');
+      let {
+        attributesManager,
+        requestEnvelope
+      } = handlerInput;
+      return requestEnvelope.request.type === 'IntentRequest' &&
+        (requestEnvelope.request.intent.name === 'AMAZON.HelpIntent' ||
+          requestEnvelope.request.intent.name === 'DontKnowIntent') &&
+        attributesManager.getSessionAttributes().STATE === settings.STATE.DEFAULT_STATE;
     },
+    handle(handlerInput) {
+      logger.log('DEBUG', 'DEFAULT.HelpDontKnowHandler: handle');
+      let {
+        attributesManager,
+        responseBuilder
+      } = handlerInput;
+      let ctx = attributesManager.getRequestAttributes();
+      let {
+        outputSpeech,
+        reprompt
+      } = ctx.t('GENERAL_HELP');
 
-    'DontKnowIntent': function() {
-        logger.log('DEBUG', "STATES.START_MODE - DontKnowIntent");         
-        this.emitWithState('AMAZON.HelpIntent');
+      ctx.outputSpeech.push(outputSpeech);
+      ctx.reprompt.push(reprompt);
+      ctx.openMicrophone = true;
+
+      return responseBuilder.getResponse();
+    }
+  },
+  /**
+   * Stop and Cancel both respond by saying goodbye and ending the session by not setting openMicrophone
+   */
+  StopCancelHandler: {
+    canHandle(handlerInput) {
+      logger.log('DEBUG', 'DEFAULT.StopHandler: canHandle');
+      let {
+        attributesManager,
+        requestEnvelope
+      } = handlerInput;
+      return requestEnvelope.request.type === 'IntentRequest' &&
+        (requestEnvelope.request.intent.name === 'AMAZON.StopIntent' ||
+          requestEnvelope.request.intent.name === 'AMAZON.CancelIntent') &&
+        (attributesManager.getSessionAttributes().STATE === settings.STATE.DEFAULT_STATE ||
+          attributesManager.getSessionAttributes().STATE === settings.STATE.ROLLCALL_STATE ||
+          attributesManager.getSessionAttributes().STATE === settings.STATE.ROLLCALL_EXIT_STATE);
     },
+    handle(handlerInput) {
+      logger.log('DEBUG', 'DEFAULT.StopHandler: handle');
+      let {
+        attributesManager,
+        responseBuilder
+      } = handlerInput;
+      let ctx = attributesManager.getRequestAttributes();
+      let {
+        outputSpeech
+      } = ctx.t('GOOD_BYE');
 
-    /**
-     * Result of the prompt to see if they want to 
-     * resume their previous game. Reset the game state and
-     * pass a variable to roll call (i.e. this.attributes.resume)
-     * so we can affect the TTS to be more natural and sound different 
-     * from the regular game start
-     */
-    'AMAZON.NoIntent' : function() {
-        logger.log('DEBUG', 'DEFAULT_STATE - AMAZON.NoIntent');
-        
-        this.attributes.resume = false;
-        this.emit('StartRollCall');
-    },
+      ctx.outputSpeech.push(outputSpeech);
+      ctx.openMicrophone = false;
+      ctx.endSession = true;
 
-    'AMAZON.StopIntent': function() {
-        logger.log('DEBUG', "DEFAULT_STATE - AMAZON.StopIntent");
-        let {outputSpeech, reprompt} = this.getUIPrompts({
-            key: 'GOOD_BYE'
-        });
-        this.response.speak(outputSpeech);        
-        this.emit('GlobalSessionEndedRequestHandler');
-    },
+      return responseBuilder.getResponse();
+    }
+  }
+}
 
-    'AMAZON.CancelIntent': function() {
-        logger.log('DEBUG', "DEFAULT_STATE - AMAZON.CancelIntent");              
-        this.emit('AMAZON.StopIntent');
-    },
-
-    'StartRollCall' : function() {
-        logger.log('DEBUG', 'DEFAULT_STATE - Calling RollCall.start');
-        let responseParams = RollCall.start.call(this);
-        this.emit('GlobalResponseReady', responseParams);
-    },
-
-    'Unhandled': function() {
-        logger.log('DEBUG', "DEFAULT_STATE - UnhandledIntent");
-        this.emit('GlobalDefaultHandler');        
-    },
-
-    'SessionEndedRequest': function() {
-        logger.log('DEBUG', 'DEFAULT_STATE - SessionEndedRequest');
-        this.emit('GlobalSessionEndedRequestHandler');
-    }    
-});
 module.exports = startHandlers;

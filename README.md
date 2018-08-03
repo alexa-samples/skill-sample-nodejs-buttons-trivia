@@ -5,7 +5,9 @@
 
 **Important: The Gadgets Skill API is in beta and is subject to change at any time without notice. We welcome your feedback.**
 
-This template offers a starting point for you to build your own Trivia Game skill featuring [Echo Buttons](https://www.amazon.com/Echo-Buttons-Alexa-Gadget-Pack/dp/B072C4KCQH). 
+* **[08/03/2018] Updated for [ASK SDK Version 2](https://developer.amazon.com/blogs/alexa/post/decb3931-2c81-497d-85e4-8fbb5ffb1114/now-available-version-2-of-the-ask-software-development-kit-for-node-js)**
+
+This template offers a starting point for you to build your own Trivia Game skill featuring [Echo Buttons](https://www.amazon.com/Echo-Buttons-Alexa-Gadget-Pack/dp/B072C4KCQH).
 The template implements [roll call](https://developer.amazon.com/docs/gadget-skills/discover-echo-buttons.html#goals) and a game loop that handles asking and answering trivia questions. It handles [receiving Echo Button events](https://developer.amazon.com/docs/gadget-skills/receive-echo-button-events.html) as well as [animating the Echo Buttons lights](https://developer.amazon.com/docs/gadget-skills/control-echo-buttons.html#animate).
 
 **Note** You may use this template as a starting point to build your own trivia game skill.
@@ -14,11 +16,11 @@ in order to provide a unique game experience, you may have to make some code cha
 
 This sample skill uses:
 
-* The [node.js](https://nodejs.org/) framework (> v6.9) for the skill code
-* The [Alexa Skills Kit (ASK) SDK for Node.js](https://github.com/alexa/alexa-skills-kit-sdk-for-nodejs/tree/master) to simplify the skill code
+* The [node.js](https://nodejs.org/) framework (>= v8.10) for the skill code
+* The [Alexa Skills Kit (ASK) SDK for Node.js](https://github.com/alexa/alexa-skills-kit-sdk-for-nodejs/tree/2.0.x) to simplify the skill code
 * [AWS Lambda](https://aws.amazon.com/lambda) to host the skill
 * [Amazon DynamoDB](https://aws.amazon.com/dynamodb) to save a state table (Optional)
-* An animation library to create simple animations such as fade out and breathe, as shown in [Animations](https://developer.amazon.com/docs/gadget-skills/echo-button-animation-library.html#animations). 
+* An animation library to create simple animations such as fade out and breathe, as shown in [Animations](https://developer.amazon.com/docs/gadget-skills/echo-button-animation-library.html#animations).
 * A fully configurable [settings file](lambda/custom/config/settings.js) to customize your game without having to write code. <!--For more information, see [How to configure your game using the settings file](instructions/2-customization.md)-->
 * A list of [questions and answers](lambda/custom/config/questions.js) you can modify to create your own game without modifying the game code. **Note** this will require you to update slot values in your skill's language model. <!-- For more information see section on [adding your own questions](instructions/2-customization.md#changing-the-questions-and-answers) -->
 
@@ -27,7 +29,7 @@ This sample skill uses:
 * Node.js (> v6.9)
 * Register for an [AWS Account](https://aws.amazon.com/)
 * Install and Setup [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/installing.html)
-* Configure a named [AWS CLI Profile](https://docs.aws.amazon.com/cli/latest/userguide/cli-multiple-profiles.html)  
+* Configure a named [AWS CLI Profile](https://docs.aws.amazon.com/cli/latest/userguide/cli-multiple-profiles.html)
 * Register for an [Amazon Developer Account](https://developer.amazon.com/)
 * Install and Setup [ASK CLI](https://developer.amazon.com/docs/smapi/quick-start-alexa-skills-kit-command-line-interface.html)
 

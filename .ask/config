@@ -1,6 +1,5 @@
 {
   "deploy_settings": {
-        
     "default": {
       "skill_id": "",
       "was_cloned": false,
@@ -8,17 +7,17 @@
         "manifest": {
           "apis": {
             "custom": {
-              "endpoint": {                    
+              "endpoint": {
                 "uri": "ask-custom-echo-button-trivia-skill"
-              }, 
+              },
               "regions": {
                 "NA": {
-                  "endpoint": {                    
+                  "endpoint": {
                     "uri": "ask-custom-echo-button-trivia-skill"
                   }
                 },
                 "EU": {
-                  "endpoint": {                    
+                  "endpoint": {
                     "uri": "ask-custom-echo-button-trivia-skill"
                   }
                 }
@@ -26,9 +25,7 @@
             }
           }
         }
-      }
-    },
-
+      },
     "trivia-skill": {
       "skill_id": "",
       "was_cloned": false,
@@ -36,17 +33,17 @@
         "manifest": {
           "apis": {
             "custom": {
-              "endpoint": {                    
+              "endpoint": {
                 "uri": "ask-custom-echo-button-trivia-skill"
-              },           
+              },
               "regions": {
                 "NA": {
-                  "endpoint": {                    
+                  "endpoint": {
                     "uri": "ask-custom-echo-button-trivia-skill"
                   }
                 },
                 "EU": {
-                  "endpoint": {                    
+                  "endpoint": {
                     "uri": "ask-custom-echo-button-trivia-skill"
                   }
                 }
@@ -57,5 +54,4 @@
       }
     }
   }
-
 }

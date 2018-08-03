@@ -14,9 +14,9 @@
 var LOG_LEVEL = require('../config/settings.js').LOG_LEVEL;
 
 function log(level, entry) {
-    if (LOG_LEVEL.includes(level)) {
-        console.log('# ' + level + ' # ' + entry);
-    }
+  if (LOG_LEVEL.includes(level)) {
+    console.log('# ' + level + ' # ' + entry);
+  }
 }
 
 module.exports.log = log;
