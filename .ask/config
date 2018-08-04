@@ -26,25 +26,26 @@
           }
         }
       },
-    "trivia-skill": {
-      "skill_id": "",
-      "was_cloned": false,
-      "merge": {
-        "manifest": {
-          "apis": {
-            "custom": {
-              "endpoint": {
-                "uri": "ask-custom-echo-button-trivia-skill"
-              },
-              "regions": {
-                "NA": {
-                  "endpoint": {
-                    "uri": "ask-custom-echo-button-trivia-skill"
-                  }
+      "trivia-skill": {
+        "skill_id": "",
+        "was_cloned": false,
+        "merge": {
+          "manifest": {
+            "apis": {
+              "custom": {
+                "endpoint": {
+                  "uri": "ask-custom-echo-button-trivia-skill"
                 },
-                "EU": {
-                  "endpoint": {
-                    "uri": "ask-custom-echo-button-trivia-skill"
+                "regions": {
+                  "NA": {
+                    "endpoint": {
+                      "uri": "ask-custom-echo-button-trivia-skill"
+                    }
+                  },
+                  "EU": {
+                    "endpoint": {
+                      "uri": "ask-custom-echo-button-trivia-skill"
+                    }
                   }
                 }
               }
