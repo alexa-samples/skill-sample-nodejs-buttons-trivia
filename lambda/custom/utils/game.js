@@ -567,7 +567,7 @@ const Game = {
 
     if (!sessionAttributes.orderedQuestions ||
       (currentQuestion === 1 && !('repeat' in sessionAttributes))) {
-      if (settings.GAME.SUFFLE_QUESTIONS) {
+      if (settings.GAME.SHUFFLE_QUESTIONS) {
         logger.log('DEBUG', 'GamePlay: producing ordered question list for new game (using shuffling)!');
         // if this is the first question, then shuffle the questions
         let orderedQuestions = gameHelper.shuffleList(questions.map(q => q.index))
