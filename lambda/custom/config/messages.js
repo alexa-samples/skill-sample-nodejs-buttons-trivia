@@ -13,12 +13,12 @@
 
 const questions = require('./questions');
 const settings = require('./settings');
-const GAME_TITLE = 'Buttons Trivia';
+const GAME_TITLE = 'Better with Buttons Trivia';
 
 const messages = {
   en: {
     translation: {
-      QUESTIONS: questions.questions_en_US,
+      'QUESTIONS': questions.questions_en_US,
       'GENERAL_HELP': {
         outputSpeech: 'To get started just ask me to play a game. ' +
           'What would you like to do? ',
@@ -30,6 +30,23 @@ const messages = {
       'UNHANDLED_REQUEST': {
         outputSpeech: "Sorry, I didn't get that. Please say again!",
         reprompt: "Please say it again. You can ask for help if you're not sure what to do."
+      },
+      'GOOD_BYE': {
+        outputSpeech: "Ok, see you next time!",
+        reprompt: ''
+      },
+
+      //
+      //--------------------  Start Game Related Prompts -------------------------------------------
+      //
+      'START_GAME': {
+        outputSpeech: "Welcome to " + GAME_TITLE + ". This game supports up to " +
+          settings.GAME.MAX_PLAYERS + " players. " +
+          "How many players are there?",
+        reprompt: "How many players?",
+        displayTitle: GAME_TITLE + " - Welcome",
+        displayText: "Welcome to " + GAME_TITLE + ". This game supports up to " +
+          settings.GAME.MAX_PLAYERS + " players."
       },
       'RESUME_GAME': {
         outputSpeech: 'Ok, we will pick up where you left off. ' +
@@ -44,10 +61,6 @@ const messages = {
         displayTitle: GAME_TITLE + " - Welcome",
         displayText: "Ok. Let's start a new game!"
       },
-      'GOOD_BYE': {
-        outputSpeech: "Ok, see you next time!",
-        reprompt: ''
-      },
       'ASK_TO_RESUME': {
         outputSpeech: "It looks like you have a {{player_count}} player game in progress, " +
           "would you like to resume?",
@@ -55,27 +68,20 @@ const messages = {
         displayTitle: GAME_TITLE + " - Welcome",
         displayText: "You have a {{player_count}} player game in progress."
       },
-      'ASK_TO_RESUME_NEW_SESSION': {
-        outputSpeech: "Welcome back! " +
-          "It looks like you have a {{player_count}} player game in progress, " +
-          "would you like to resume?",
-        reprompt: 'Would you like to resume the last game?',
+      'PLAYERCOUNT_INVALID': {
+        outputSpeech: 'Please say a number between one and ' + settings.GAME.MAX_PLAYERS,
+        reprompt: 'Please say a number between one and ' + settings.GAME.MAX_PLAYERS
+      },
+      'SINGLE_PLAYER_GAME_READY': {
+        outputSpeech: ["Fantastic! Are you ready to start the game?"],
+        reprompt: "Ready to start the game?",
         displayTitle: GAME_TITLE + " - Welcome",
-        displayText: "You have a {{player_count}} player game in progress."
+        displayText: "Are you ready to start the game?"
       },
 
       //
       //--------------------  Roll Call Related Prompts -------------------------------------------
       //
-      'START_ROLL_CALL': {
-        outputSpeech: "Welcome to " + GAME_TITLE + ". This game supports up to " +
-          settings.GAME.MAX_PLAYERS + " players. " +
-          "How many players are there?",
-        reprompt: "How many players?",
-        displayTitle: GAME_TITLE + " - Welcome",
-        displayText: "Welcome to " + GAME_TITLE + ". This game supports up to " +
-          settings.GAME.MAX_PLAYERS + " players."
-      },
       'ROLL_CALL_HELP': {
         outputSpeech: 'This is a trivia game for Echo Buttons. ' +
           'In order to play the game, each player must check in by ' +
@@ -86,29 +92,9 @@ const messages = {
         displayText: 'In order to play the game, each player must check in by ' +
           'pressing an Echo Button. Would you like to continue?'
       },
-      'ROLL_CALL_EXIT_HELP': {
-        outputSpeech: 'This is a trivia game for Echo Buttons. ' +
-          'In order to play the game, each player must check in by ' +
-          'pressing an Echo Button. Would you like to continue and ' +
-          'check players in for the game?',
-        reprompt: "Sorry, I didn't catch that, what would you like to do next?",
-        displayTitle: GAME_TITLE + ' - Help',
-        displayText: 'In order to play the game, each player must check in by ' +
-          'pressing an Echo Button. Would you like to continue?'
-      },
-      'PLAYERCOUNT_INVALID': {
-        outputSpeech: 'Please say a number between one and ' + settings.GAME.MAX_PLAYERS,
-        reprompt: 'Please say a number between one and ' + settings.GAME.MAX_PLAYERS
-      },
       'ROLL_CALL_CONTINUE': {
         outputSpeech: "Ok. Players, press your buttons now, " +
           "so I'll know which buttons you will be using.",
-        displayTitle: GAME_TITLE + " - Welcome",
-        displayText: "To resume the game, each player, please press your button once!"
-      },
-      'ROLL_CALL_CONTINUE_SINGLE': {
-        outputSpeech: "Ok. Press your button now, " +
-          "so I'll know which button you will be using.",
         displayTitle: GAME_TITLE + " - Welcome",
         displayText: "To resume the game, each player, please press your button once!"
       },
@@ -133,16 +119,8 @@ const messages = {
       'ROLL_CALL_HELLO_PLAYER': {
         outputSpeech: "Hello, player {{player_number}}. "
       },
-      'ROLL_CALL_PLAYER_ALREADY_CHECKED_IN': {
-        outputSpeech: "Hey player {{player_number}}. " +
-          "You already checked in. You can't register twice."
-      },
       'ROLL_CALL_NEXT_PLAYER_PROMPT': {
         outputSpeech: "Ok, your turn Player {{player_number}}, press your button."
-      },
-      'ANSWER_DURING_ROLLCALL': {
-        outputSpeech: "The game hasn't started yet. " +
-          "All players, please press your buttons to get started!"
       },
 
       //
@@ -156,7 +134,10 @@ const messages = {
         displayTitle: "Thanks for playing!"
       },
       'GAME_FINISHED_INTRO': {
-        outputSpeech: "The game is finished. let's hear the final scores."
+        outputSpeech: "The game is finished. Let's hear the final scores."
+      },
+      'SINGLE_PLAYER_GAME_FINISHED_INTRO': {
+        outputSpeech: "The game is finished. Let's hear your final score."
       },
       'GAME_FINISHED': {
         outputSpeech: "Thanks for playing",
@@ -195,6 +176,12 @@ const messages = {
         outputSpeech: "Sorry, wrong answer player {{player_number}}. " +
           "Let's try another question."
       },
+      'SINGLE_PLAYER_CORRECT_ANSWER_DURING_PLAY': {
+        outputSpeech: "Correct! Great job."
+      },
+      'SINGLE_PLAYER_INCORRECT_ANSWER_DURING_PLAY': {
+        outputSpeech: "Sorry, wrong answer."
+      },
       'MISUNDERSTOOD_ANSWER': {
         outputSpeech: "Sorry, I didn't get that. Please say again!",
         reprompt: "Please repeat the answer."
@@ -223,6 +210,18 @@ const messages = {
         "Oh no! That's not the answer.",
         "No, that's not it!"]
       },
+      'SINGLE_PLAYER_ANSWER_QUESTION_CORRECT_DISPLAY': {
+        displayTitle: GAME_TITLE,
+        displayText: ["Great job! That's right.",
+        "Awesome! That's the answer.",
+        "Correct! You got it."]
+      },
+      'SINGLE_PLAYER_ANSWER_QUESTION_INCORRECT_DISPLAY': {
+        displayTitle: GAME_TITLE,
+        displayText: ["Opps! That's not right.",
+        "Oh no! That's not the answer.",
+        "No, that's not it!"]
+      },
       'ASK_FIRST_QUESTION_NEW_GAME_DISPLAY': {
         displayTitle: GAME_TITLE + " - New Game",
         displayText: "Get ready to start!"
@@ -244,6 +243,10 @@ const messages = {
           'to answer. You will earn a point for each question you ' +
           'answer correctly.'
       },
+
+      //
+      //--------------------  Round Summary Related Prompts -------------------------------------
+      //
       'GAME_ROUND_SUMMARY_INTRO': {
         outputSpeech: "After the <say-as interpret-as='ordinal'>{{round}}</say-as> round."
       },
@@ -279,6 +282,7 @@ const messages = {
       }
     }
   },
+
   //
   // To override by territory follow the below pattern
   //

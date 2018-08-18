@@ -26,10 +26,10 @@ const DEFAULT_BUTTON_ANIMATION_DIRECTIVES = {
 };
 
 /**
- * A template input handler configuration that will be 
+ * A template input handler configuration that will be
  * used as a starting point for the roll call input handler.
- * 
- * The final configuration is dynamically generated. 
+ *
+ * The final configuration is dynamically generated.
  */
 const ROLL_CALL_INPUT_HANDLER_CONFIG_TEMPLATE = {
   'timeout': 1000,
@@ -65,19 +65,19 @@ const rollCallHelper = {
     playerCount,
     timeout
   }) {
-    logger.log('DEBUG', 'ROLLCALL_HELPER: generate input handler config');
+    logger.debug('ROLLCALL_HELPER: generate input handler config');
 
     playerCount = parseInt(playerCount || 1, 10);
 
     /**
      * For roll call we will use a list of proxies because we won't
-     * know the Id of any of the buttons ahead of time. 
+     * know the Id of any of the buttons ahead of time.
      * The proxies will be filld out dynamically in a loop below.
      */
     let proxies = [];
 
     /**
-     *  create a recognizer pattern that matches once when all 
+     *  create a recognizer pattern that matches once when all
      *  the buttons have been pressed at least once.
      */
     let allButtonsRecognizerPattern = [];
@@ -92,7 +92,7 @@ const rollCallHelper = {
 
     /**
      *  set up the proxies and recognizer patterns dynamically
-     *  based on the number of players. 
+     *  based on the number of players.
      */
     for (let numPlayer = 0; numPlayer < playerCount; numPlayer++) {
       let proxyName = 'btn' + (1 + numPlayer);
@@ -103,14 +103,14 @@ const rollCallHelper = {
       };
       allButtonsRecognizerPattern.push(patternStep);
       if (numPlayer < (playerCount - 1)) {
-        // for all but the last player, add an intermediate recognizer                
+        // for all but the last player, add an intermediate recognizer
         intermediateRecognizerPatterns.push(Array.of(patternStep));
       }
     }
 
     /**
      *  create the input handler configuration object
-     *  that defines the recognizers and events used for roll call 
+     *  that defines the recognizers and events used for roll call
      *  the full definition will be filled in dynamically
      */
     let inputHandlerConfig = Object.assign({}, ROLL_CALL_INPUT_HANDLER_CONFIG_TEMPLATE);
@@ -144,13 +144,8 @@ const rollCallHelper = {
     return inputHandlerConfig;
   },
 
-  isValidPlayerCount: function (count) {
-    logger.log('DEBUG', 'ROLLCALL_HELPER: is valid player count?');
-    return (count <= settings.GAME.MAX_PLAYERS && count > 0)
-  },
-
   listenForRollCall: function (handlerInput, inputHandlerConfig) {
-    logger.log('DEBUG', 'ROLLCALL_HELPER: listen for roll call');
+    logger.debug('ROLLCALL_HELPER: listen for roll call');
     let ctx = handlerInput.attributesManager.getRequestAttributes();
     let sessionAttributes = handlerInput.attributesManager.getSessionAttributes();
 
@@ -168,8 +163,8 @@ const rollCallHelper = {
   },
 
   dispatchGameEngineEvents: function (handlerInput, inputEvents) {
-    logger.log('DEBUG', 'ROLLCALL_HELPER: dispatch game engine events');
-    // try to process events in order of importance 
+    logger.debug('ROLLCALL_HELPER: dispatch game engine events');
+    // try to process events in order of importance
     // 1) first pass through to see if there are any non-timeout events
     for (let eventIndex = 0; eventIndex < inputEvents.length; eventIndex++) {
       if ('roll_call_complete' === inputEvents[eventIndex].name) {
@@ -188,14 +183,13 @@ const rollCallHelper = {
   },
 
   handleRollCallComplete: function (handlerInput, inputEvent) {
-    logger.log('DEBUG', 'ROLLCALL_HELPER: handle roll call complete: ' +
+    logger.debug('ROLLCALL_HELPER: handle roll call complete: ' +
       JSON.stringify(inputEvent));
     let ctx = handlerInput.attributesManager.getRequestAttributes();
     let sessionAttributes = handlerInput.attributesManager.getSessionAttributes();
 
-    sessionAttributes.STATE = settings.STATE.GAME_LOOP_STATE;
-    sessionAttributes.rollCallComplete = true;
-    delete sessionAttributes.expectingEndSkillConfirmation;
+    // Move to the button game state to begin the game
+    sessionAttributes.STATE = settings.STATE.BUTTON_GAME_STATE;
 
     sessionAttributes.buttons = inputEvent.inputEvents
       .map((evt, idx) => {
@@ -204,7 +198,6 @@ const rollCallHelper = {
           count: (1 + idx)
         };
       });
-    sessionAttributes.buttonCount = sessionAttributes.buttons.length;
     // clear animations on all other buttons that haven't been added to the game
     ctx.directives.push(directives.GadgetController.setIdleAnimation({
       'animations': animations.BasicAnimations.SolidAnimation(1, "black", 100)
@@ -215,19 +208,19 @@ const rollCallHelper = {
       'animations': settings.ANIMATIONS.ROLL_CALL_COMPLETE_ANIMATION
     }));
 
-    logger.log('DEBUG', 'RollCall: resuming game play, from question: ' +
+    logger.debug('RollCall: resuming game play, from question: ' +
       sessionAttributes.currentQuestion);
 
     let currentPrompts;
     if (settings.ROLLCALL.NAMED_PLAYERS) {
-      // tell the next player to press their button.        
+      // tell the next player to press their button.
       let responseMessage = ctx.t('ROLL_CALL_HELLO_PLAYER', {
-        player_number: sessionAttributes.buttonCount
+        player_number: sessionAttributes.buttons.length
       });
       currentPrompts = responseMessage;
     }
 
-    let responseMessage = ctx.t('ROLL_CALL_COMPLETE', sessionAttributes.buttonCount);
+    let responseMessage = ctx.t('ROLL_CALL_COMPLETE', sessionAttributes.buttons.length);
     let mixedOutputSpeech = '';
     if (currentPrompts) {
       mixedOutputSpeech = currentPrompts.outputSpeech +
@@ -244,7 +237,7 @@ const rollCallHelper = {
 
   // handles the case when the roll call process times out before all players are checked in
   handleRollCallTimeout: function (handlerInput) {
-    logger.log('DEBUG', 'ROLLCALL_HELPER: handling time out event during roll call');
+    logger.debug('ROLLCALL_HELPER: handling time out event during roll call');
     let ctx = handlerInput.attributesManager.getRequestAttributes();
     let sessionAttributes = handlerInput.attributesManager.getSessionAttributes();
     // Reset button animation for all buttons
@@ -254,16 +247,11 @@ const rollCallHelper = {
     let responseMessage = ctx.t('ROLL_CALL_TIME_OUT');
     ctx.outputSpeech.push(responseMessage.outputSpeech);
     ctx.reprompt.push(responseMessage.reprompt);
-
-    // Set flag that we're expecting end confirmation 
-    //   this flag is used in the Yes/No intent disambiguation
-    sessionAttributes.STATE = settings.STATE.ROLLCALL_EXIT_STATE;
-    sessionAttributes.expectingEndSkillConfirmation = true;
     ctx.openMicrophone = true;
   },
 
   handleRollCallButtonCheckIn: function (handlerInput, inputEvent) {
-    logger.log('DEBUG', 'ROLLCALL_HELPER: handle button press event: ' +
+    logger.debug('ROLLCALL_HELPER: handle button press event: ' +
       JSON.stringify(inputEvent));
     let sessionAttributes = handlerInput.attributesManager.getSessionAttributes();
 
@@ -273,26 +261,25 @@ const rollCallHelper = {
     // Failsafe - Check to see if we already have this button registered and if so skip registration
     for (let buttonIndex = 0; buttonIndex < buttons.length; buttonIndex++) {
       if (buttons[buttonIndex].buttonId === buttonId){
-        logger.log('DEBUG', 'This button is already registered. GadgetId=' + buttonId);
+        logger.debug('This button is already registered. GadgetId=' + buttonId);
         return;
       }
     }
 
-    let buttonCount = buttons.length + 1;
-    logger.log('DEBUG', 'Found a new button. New button count: ' + buttonCount);
+    let buttonNumber = buttons.length + 1;
+    logger.debug('Found a new button. New button number: ' + buttonNumber);
     buttons.push({
-      count: buttonCount,
+      count: buttonNumber,
       buttonId: buttonId
     });
     sessionAttributes.buttons = buttons;
-    sessionAttributes.buttonCount = buttons.length;
 
     rollCallHelper.handlePlayerCheckedIn(handlerInput, buttonId, buttons.length);
   },
 
   // handles a player checking in
   handlePlayerCheckedIn: function (handlerInput, buttonId, playerNumber) {
-    logger.log('DEBUG', 'ROLLCALL_HELPER: handle new player checked in: playerNumber = ' +
+    logger.debug('ROLLCALL_HELPER: handle new player checked in: playerNumber = ' +
       playerNumber + ', buttonId = ' + buttonId);
     let ctx = handlerInput.attributesManager.getRequestAttributes();
 
@@ -306,7 +293,7 @@ const rollCallHelper = {
     }));
 
     if (settings.ROLLCALL.NAMED_PLAYERS) {
-      // tell the next player to press their button.        
+      // tell the next player to press their button.
       let responseMessage = ctx.t('ROLL_CALL_HELLO_PLAYER', {
         player_number: playerNumber
       });
@@ -322,8 +309,8 @@ const rollCallHelper = {
     ctx.openMicrophone = false;
   },
 
-  resumeRollCall: function (handlerInput, messageKey) {
-    logger.log('DEBUG', 'ROLLCALL_HELPER: resume roll call');
+  startRollCall: function (handlerInput, messageKey) {
+    logger.debug('ROLLCALL_HELPER: resume roll call');
     let ctx = handlerInput.attributesManager.getRequestAttributes();
     let sessionAttributes = handlerInput.attributesManager.getSessionAttributes();
     let inputHandlerConfig = rollCallHelper.generateInputHandlerConfig({
@@ -339,69 +326,36 @@ const rollCallHelper = {
     ctx.outputSpeech.push(settings.AUDIO.WAITING_FOR_ROLL_CALL_AUDIO);
     ctx.openMicrophone = true;
 
-    sessionAttributes.expectingEndSkillConfirmation = false;
     sessionAttributes.buttons = [];
-    sessionAttributes.buttonCount = 0;
   }
 }
 
 const RollCall = {
   /**
-   *   Exported method that resumes a Roll Call process.
-   *   Typically called when an updated player count is available
-   *   or, to resume roll call after Help is presented, or when 
-   *   the game is started as a new session that previously had
-   *   roll call completed.
+   *   Exported method that starts Roll Call.
    */
-  resume: function (handlerInput, isNewSession, playerCount) {
-    logger.log('DEBUG', 'ROLLCALL: resume roll call');
+  start: function (handlerInput, resumingGame, playerCount) {
+    logger.debug('ROLLCALL: start roll call');
     let ctx = handlerInput.attributesManager.getRequestAttributes();
     let sessionAttributes = handlerInput.attributesManager.getSessionAttributes();
 
-    delete sessionAttributes.expectingEndSkillConfirmation;
+    sessionAttributes.STATE = settings.STATE.ROLLCALL_STATE;
+    sessionAttributes.playerCount = playerCount;
+    sessionAttributes.buttons = [];
+    ctx.openMicrophone = false;
 
-    // Check to see if value provided is within the range
-    if (!rollCallHelper.isValidPlayerCount(playerCount)) {
-      logger.log('DEBUG', 'playerCount: received invalid count = ' + playerCount);
-
-      let {
-        outputSpeech,
-        reprompt
-      } = ctx.t('PLAYERCOUNT_INVALID');
-      ctx.outputSpeech.push(outputSpeech);
-      ctx.reprompt.push(reprompt);
-      ctx.openMicrophone = true;
-    } else {
-      logger.log('DEBUG', 'playerCount: received valid count =' + playerCount);
-
-      // save the player count and reset button count and the buttons array
-      sessionAttributes.playerCount = playerCount;
-      sessionAttributes.buttonCount = 0;
-      sessionAttributes.buttons = [];
-      ctx.openMicrophone = false;
-
-      let messageKey;
-      if (playerCount === 1){
-        messageKey = isNewSession ? 'ROLL_CALL_RESUME_GAME' : 'ROLL_CALL_CONTINUE_SINGLE';
-      } else {
-        messageKey = isNewSession ? 'ROLL_CALL_RESUME_GAME' : 'ROLL_CALL_CONTINUE';
-      }
-
-       rollCallHelper.resumeRollCall(handlerInput, messageKey);
-    }
+    let messageKey = resumingGame ? 'ROLL_CALL_RESUME_GAME' : 'ROLL_CALL_CONTINUE';
+    rollCallHelper.startRollCall(handlerInput, messageKey);
   },
 
   /**
    *  Exported method that cancels an in-progress roll call.
    */
   cancel: function (handlerInput) {
-    logger.log('DEBUG', 'ROLLCALL: canceling roll call');
+    logger.debug('ROLLCALL: canceling roll call');
     let sessionAttributes = handlerInput.attributesManager.getSessionAttributes();
 
-    sessionAttributes.rollCallComplete = false;
-    delete sessionAttributes.buttonCount;
     delete sessionAttributes.buttons;
-
     if (sessionAttributes.inputHandlerId) {
       // Stop the previous InputHandler if one was running
       let ctx = attributesManager.getRequestAttributes();
@@ -412,53 +366,8 @@ const RollCall = {
   },
 
   /**
-   *  Exported method that initiates the process of Roll Call
-   *  This method always starts a new Roll Call - regardless of whether a 
-   *  roll call was in progress or not at the time it is called.
-   */
-  start: function (handlerInput) {
-    let ctx = handlerInput.attributesManager.getRequestAttributes();
-    let sessionAttributes = handlerInput.attributesManager.getSessionAttributes();
-    logger.log('DEBUG', 'ROLLCALL: starting roll call (resume = ' + sessionAttributes.resume + ')');
-
-    let messageKey = 'START_ROLL_CALL';
-    if ('resume' in sessionAttributes) {
-      // Indication that user either said yes or no to resuming a game
-      if (sessionAttributes.resume) {
-        messageKey = 'RESUME_GAME';
-      } else {
-        messageKey = 'DONT_RESUME_GAME';
-      }
-    }
-
-    const responseMessage = ctx.t(messageKey);
-    ctx.outputSpeech.push(responseMessage.outputSpeech);
-    ctx.reprompt.push(responseMessage.reprompt);
-    ctx.render(handlerInput, responseMessage);
-    ctx.openMicrophone = true;
-
-    // delete all attributes
-    let attributeNames = Object.keys(sessionAttributes);
-    for (let k = 0; k < attributeNames.length; k++) {
-      delete sessionAttributes[attributeNames[k]];
-    }
-
-    // Roll call has not completed, so lets save the state
-    sessionAttributes.rollCallComplete = false;
-    sessionAttributes.expectingEndSkillConfirmation = false;
-
-    // Set state to Roll Call
-    sessionAttributes.STATE = settings.STATE.ROLLCALL_STATE;
-
-    // Send an intro animation to all connected buttons
-    ctx.directives.push(directives.GadgetController.setIdleAnimation({
-      'animations': settings.ANIMATIONS.INTRO_ANIMATION
-    }));
-  },
-
-  /**
    *   Exported GameEngine event handler.
-   *   Should be called to receive all GameEngine InputHandlerEvents 
+   *   Should be called to receive all GameEngine InputHandlerEvents
    */
   handleEvents: function (handlerInput, inputEvents) {
     return rollCallHelper.dispatchGameEngineEvents(handlerInput, inputEvents);

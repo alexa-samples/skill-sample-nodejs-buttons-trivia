@@ -46,7 +46,7 @@ module.exports = (function () {
     QUESTIONS_PER_GAME: 6,
     QUESTIONS_PER_ROUND: 2,
     ANSWER_SIMILARITY: .60,
-    MAX_ANSWERS_PER_QUESTION: 2,
+    MAX_ANSWERS_PER_QUESTION: 4,
     SHUFFLE_QUESTIONS: true
   };
 
@@ -72,7 +72,7 @@ module.exports = (function () {
    */
   const STORAGE = {
     // Session persistence
-    SESSION_TABLE: 'nodejs-buttons-trivia-v2-sessions'
+    SESSION_TABLE: 'better-with-buttons-trivia'
   };
 
   /**
@@ -202,15 +202,15 @@ module.exports = (function () {
   /*
    * Define the different states that this skill can be in. For the Trivia skill,
    * we define ROLLCALL, GAME_LOOP, ROLLCALL_EXIT, and the initial state called
-   * DEFAULT_STATE (which maps to the initial state).
+   * START_GAME_STATE (which maps to the initial state).
    */
   const SKILL_STATES = {
     // Start mode performs roll call and button registration.
     // https://developer.amazon.com/docs/gadget-skills/discover-echo-buttons.html
-    DEFAULT_STATE: '',
+    START_GAME_STATE: '',
     ROLLCALL_STATE: '_ROLLCALL',
-    ROLLCALL_EXIT_STATE: '_ROLLCALL_EXIT',
-    GAME_LOOP_STATE: '_GAME_LOOP'
+    BUTTON_GAME_STATE: '_BUTTON_GAME',
+    BUTTONLESS_GAME_STATE: '_BUTTONLESS_GAME'
   };
 
   // return the externally exposed settings object
@@ -224,7 +224,7 @@ module.exports = (function () {
     COLORS: COLORS,
     ANIMATIONS: GAME_ANIMATIONS,
     STATE: SKILL_STATES,
-    LOG_LEVEL: ['DEBUG', 'INFO', 'WARN', 'ERROR'],
+    LOG_LEVEL: 'DEBUG',
     pickRandom(arry) {
       if (Array.isArray(arry)) {
         return arry[Math.floor(Math.random() * Math.floor(arry.length))]

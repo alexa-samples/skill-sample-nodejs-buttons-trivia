@@ -18,70 +18,12 @@ const settings = require('../config/settings.js');
  * Handling everything for the ROLLCALL_STATE state.
  */
 const rollCallHandlers = {
-  AnswerQuestionHandler: {
-    canHandle(handlerInput) {
-      logger.log('DEBUG', 'ROLLCALL.AnswerQuestionHandler: canHandle');
-      let {
-        attributesManager,
-        requestEnvelope
-      } = handlerInput;
-      return requestEnvelope.request.type === 'IntentRequest' &&
-        (requestEnvelope.request.intent.name === 'AnswerQuestionIntent' ||
-          requestEnvelope.request.intent.name === 'AnswerOnlyIntent') &&
-        attributesManager.getSessionAttributes().STATE === settings.STATE.ROLLCALL_STATE;
-    },
-    handle(handlerInput) {
-      logger.log('DEBUG', 'ROLLCALL.AnswerQuestionHandler: handle');
-      let {
-        attributesManager,
-        responseBuilder
-      } = handlerInput;
-      let ctx = attributesManager.getRequestAttributes();
-      let sessionAttributes = attributesManager.getSessionAttributes();
-
-      let shouldRestartRollCall = !('playerCount' in sessionAttributes) ||
-        !('inputHandlerId' in sessionAttributes);
-      let uiKey = shouldRestartRollCall ? 'START_ROLL_CALL' : 'ANSWER_DURING_ROLLCALL';
-      let uiPrompts = ctx.t(uiKey);
-      ctx.outputSpeech.push(uiPrompts.outputSpeech);
-      ctx.openMicrophone = shouldRestartRollCall;
-      return responseBuilder.getResponse();
-    }
-  },
-  PlayerCountHandler: {
-    canHandle(handlerInput) {
-      logger.log('DEBUG', 'ROLLCALL.PlayerCountHandler: canHandle');
-      let {
-        attributesManager,
-        requestEnvelope
-      } = handlerInput;
-      return requestEnvelope.request.type === 'IntentRequest' &&
-        (requestEnvelope.request.intent.name === 'PlayerCount' ||
-        requestEnvelope.request.intent.name === 'PlayerCountOnly') &&
-        attributesManager.getSessionAttributes().STATE === settings.STATE.ROLLCALL_STATE;
-    },
-    handle(handlerInput) {
-      logger.log('DEBUG', 'ROLLCALL.PlayerCountHandler: handle');
-      let {
-        requestEnvelope,
-        attributesManager,
-        responseBuilder
-      } = handlerInput;
-      const sessionAttributes = attributesManager.getSessionAttributes();
-
-      sessionAttributes.rollCallComplete = false;
-      let playerCount = requestEnvelope.request.intent.slots.players ?
-        parseInt(requestEnvelope.request.intent.slots.players.value, 10) : 0;
-      RollCall.resume(handlerInput, false, playerCount);
-      return responseBuilder.getResponse();
-    }
-  },
   /**
    * Events from the game engine
    */
   GameEventHandler: {
     canHandle(handlerInput) {
-      logger.log('DEBUG', 'ROLLCALL.GameEventHandler: canHandle');
+      logger.debug('ROLLCALL.GameEventHandler: canHandle');
       let {
         attributesManager,
         requestEnvelope
@@ -90,7 +32,7 @@ const rollCallHandlers = {
         attributesManager.getSessionAttributes().STATE === settings.STATE.ROLLCALL_STATE;
     },
     handle(handlerInput) {
-      logger.log('DEBUG', 'ROLLCALL.GameEventHandler: handle');
+      logger.debug('ROLLCALL.GameEventHandler: handle');
       let {
         attributesManager,
         requestEnvelope,
@@ -98,25 +40,26 @@ const rollCallHandlers = {
       } = handlerInput;
       const sessionAttributes = attributesManager.getSessionAttributes();
       const ctx = attributesManager.getRequestAttributes();
-      logger.log('DEBUG', 'CURRENT REQUEST ID: ' + sessionAttributes.inputHandlerId + ' ==?  ORIGINATING REQUEST ID: ' + requestEnvelope.request.originatingRequestId);
+
+      // Ensure the events are current
       if (requestEnvelope.request.originatingRequestId !== sessionAttributes.inputHandlerId) {
-        logger.log('DEBUG', "Global.GameEngineInputHandler: stale input event received -> " +
+        logger.debug("Global.GameEngineInputHandler: stale input event received -> " +
           "received event from " + request.originatingRequestId +
-          " (was expecting " + sessionAttributes.CurrentInputHandlerID + ")");
+          " (was expecting " + sessionAttributes.inputHandlerId + ")");
         ctx.openMicrophone = false;
         return handlerInput.responseBuilder.getResponse();
       }
-      let inputEvents = requestEnvelope.request.events;
-      RollCall.handleEvents(handlerInput, inputEvents);
+
+      RollCall.handleEvents(handlerInput, requestEnvelope.request.events);
       return responseBuilder.getResponse();
     }
   },
   /**
-   * The player has responded 'no' to the option of resuming the previous game.
+   * The player has responded 'no' to the option of continuing roll call.
    */
   NoHandler: {
     canHandle(handlerInput) {
-      logger.log('DEBUG', 'ROLLCALL.NoHandler: canHandle');
+      logger.debug('ROLLCALL.NoHandler: canHandle');
       let {
         attributesManager,
         requestEnvelope
@@ -126,24 +69,27 @@ const rollCallHandlers = {
         attributesManager.getSessionAttributes().STATE === settings.STATE.ROLLCALL_STATE;
     },
     handle(handlerInput) {
-      logger.log('DEBUG', 'ROLLCALL.NoHandler: handle');
+      logger.debug('ROLLCALL.NoHandler: handle');
       let {
         attributesManager,
         responseBuilder
       } = handlerInput;
-      let sessionAttributes = attributesManager.getSessionAttributes();
+      let ctx = attributesManager.getRequestAttributes();
 
-      sessionAttributes.resume = false;
-      RollCall.start(handlerInput);
+      let responseMessage = ctx.t('GOOD_BYE');
+      ctx.outputSpeech.push(responseMessage.outputSpeech);
+      ctx.openMicrophone = false;
+      ctx.endSession = true;
+
       return responseBuilder.getResponse();
     }
   },
   /**
-   * The player has responded 'yes' to the option of resuming the previous game.
+   * The player has responded 'yes' to the option of continuing roll call.
    */
   YesHandler: {
     canHandle(handlerInput) {
-      logger.log('DEBUG', 'ROLLCALL.NoHandler: canHandle');
+      logger.debug('ROLLCALL.YesHandler: canHandle');
       let {
         attributesManager,
         requestEnvelope
@@ -153,35 +99,14 @@ const rollCallHandlers = {
         attributesManager.getSessionAttributes().STATE === settings.STATE.ROLLCALL_STATE;
     },
     handle(handlerInput) {
-      logger.log('DEBUG', 'ROLLCALL.NoHandler: handle');
+      logger.debug('ROLLCALL.YesHandler: handle');
       let {
         attributesManager,
         responseBuilder
       } = handlerInput;
-      const sessionAttributes = attributesManager.getSessionAttributes();
+      let sessionAttributes = attributesManager.getSessionAttributes();
 
-      if (!!sessionAttributes.rollCallComplete) {
-        sessionAttributes.rollCallComplete = (sessionAttributes.playerCount === sessionAttributes.buttonCount &&
-          sessionAttributes.buttons &&
-          sessionAttributes.buttons.length === sessionAttributes.buttonCount);
-        logger.log('DEBUG', 'Determined that rollCall status is ' +
-          (sessionAttributes.rollCallComplete ? 'COMPLETE' : 'IN-PROGRESS'));
-      }
-
-      // Resume Roll Call
-      sessionAttributes.resume = true;
-      if (sessionAttributes.playerCount > 0) {
-        logger.log('DEBUG', 'Resume roll call. We know the number of players: ' +
-          sessionAttributes.playerCount);
-        // resume game play from a previous game
-        if (!sessionAttributes.currentQuestion) {
-          sessionAttributes.currentQuestion = 1;
-        }
-        RollCall.resume(handlerInput, !!sessionAttributes.rollCallComplete, sessionAttributes.playerCount);
-      } else {
-        logger.log('DEBUG', 'Resuming roll call, but starting from scratch!');
-        RollCall.start(handlerInput);
-      }
+      RollCall.start(handlerInput, false, sessionAttributes.playerCount);
       return responseBuilder.getResponse();
     }
   }

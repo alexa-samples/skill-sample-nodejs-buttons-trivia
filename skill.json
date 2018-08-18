@@ -3,34 +3,34 @@
     "publishingInformation": {
       "locales": {
         "en-US": {
-          "summary": "A trivia game featuring Echo Buttons for competitive play.",
+          "summary": "A trivia game made better with Echo Buttons for competitive play.",
           "examplePhrases": [
-            "Alexa, open buttons trivia",
-            "Alexa, start buttons trivia",
-            "Alexa, ask buttons trivia to start a new game"
+            "Alexa, open better buttons trivia",
+            "Alexa, start better buttons trivia",
+            "Alexa, ask better buttons trivia to start a new game"
           ],
           "keywords": [
             "buttons",
             "games",
             "trivia"
           ],
-          "name": "Button Trivia Template",
-          "description": "This is a fast-paced, trivia-style game, featuring Echo Buttons. Challenge your friends, or play by yourself."
+          "name": "Better with Buttons Trivia Template",
+          "description": "This is a fast-paced, trivia-style game, made better with Echo Buttons. Challenge your friends, or play by yourself."
         },
         "en-GB": {
           "summary": "A trivia game featuring Echo Buttons for competitive play.",
           "examplePhrases": [
-            "Alexa, open buttons trivia",
-            "Alexa, start buttons trivia",
-            "Alexa, ask buttons trivia to start a new game"
+            "Alexa, open better buttons trivia",
+            "Alexa, start better buttons trivia",
+            "Alexa, ask better buttons trivia to start a new game"
           ],
           "keywords": [
             "buttons",
             "games",
             "trivia"
           ],
-          "name": "Buttons Trivia Template",
-          "description": "This is a fast-paced, trivia-style game, featuring Echo Buttons. Challenge your friends, or play by yourself."
+          "name": "Better With Buttons Trivia Template",
+          "description": "This is a fast-paced, trivia-style game, made better with Echo Buttons. Challenge your friends, or play by yourself."
         }
       },
       "isAvailableWorldwide": false,
@@ -41,7 +41,7 @@
       "gadgetSupport": {
         "maxGadgetButtons": 4,
         "minGadgetButtons": 1,
-        "requirement": "REQUIRED",
+        "requirement": "OPTIONAL",
         "numPlayersMin": 1
       }
     },
@@ -62,10 +62,10 @@
           }
         ],
         "regions": {
-          "NA": {    
+          "NA": {
             "endpoint": {
               "sourceDir": "lambda/custom"
-            }      
+            }
           },
           "EU": {
             "endpoint": {

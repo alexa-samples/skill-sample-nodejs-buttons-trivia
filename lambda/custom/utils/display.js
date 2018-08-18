@@ -16,7 +16,7 @@ const logger = require('../utils/logger.js');
 const Display = {
   render: function (
     /* The Alexa request and attributes */
-    handlerInput, 
+    handlerInput,
     {
       displayTitle,
       /* primary text content to display */
@@ -35,12 +35,12 @@ const Display = {
      * Check for display
      */
     if (!handlerInput.requestEnvelope.context.System.device.supportedInterfaces.Display) {
-      logger.log('DEBUG', 'No display to render.');
+      logger.debug('No display to render.');
       return;
     }
 
     if (!displayText) {
-      logger.log('WARN', 'Render template without primary text!');
+      logger.warn('Render template without primary text!');
     }
 
     let text = displayText || '';
@@ -55,7 +55,8 @@ const Display = {
 
     const background = backgroundImage || settings.pickRandom(settings.IMAGES.BACKGROUND_IMAGES);
 
-    const textContent = new Alexa.PlainTextContentHelper()
+    // Rich can handle plain as well
+    const textContent = new Alexa.RichTextContentHelper()
       .withPrimaryText(text)
       .withSecondaryText(subText)
       .getTextContent();

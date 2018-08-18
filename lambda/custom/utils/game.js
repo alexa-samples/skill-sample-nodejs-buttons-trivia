@@ -83,7 +83,7 @@ const gameHelper = {
   },
 
   getFormattedScores: function (handlerInput, scores, numberOfPlayers) {
-    logger.log('DEBUG', 'Getting Formatted Scores for ' + numberOfPlayers + 'with Scores = ' + scores);
+    logger.debug('Getting Formatted Scores for ' + numberOfPlayers + 'with Scores = ' + scores);
     let ctx = handlerInput.attributesManager.getRequestAttributes();
     const orderedScores =
       gameHelper.getOrderedScoreGroups(scores, numberOfPlayers);
@@ -96,7 +96,7 @@ const gameHelper = {
     //      { 5 : [ '1', '2' ] },
     //      { 3 : [ '4' ] },
 
-    logger.log('DEBUG', JSON.stringify(orderedScores));
+    logger.debug(JSON.stringify(orderedScores));
 
     let outputSpeech = '';
     let responseMessage = {};
@@ -146,7 +146,7 @@ const gameHelper = {
    * Produces output speech that narrates the current round summary
    */
   generateRoundSummaryNarration: function (handlerInput, currentQuestion, scores, playerCount) {
-    logger.log('DEBUG', 'GenerateRoundSummaryNarration: question = ' + currentQuestion +
+    logger.debug('GenerateRoundSummaryNarration: question = ' + currentQuestion +
       ', playerCount = ' + playerCount);
     let ctx = handlerInput.attributesManager.getRequestAttributes();
     let questionsPerRound = parseInt(settings.GAME.QUESTIONS_PER_ROUND, 10);
@@ -225,9 +225,16 @@ const Game = {
    *  When the game is finished, 'resetGame' is always set to TRUE.
    */
   endGame: function (handlerInput, resetGame) {
-    logger.log('DEBUG', "GAME: end game");
+    logger.debug("GAME: end game");
     let ctx = handlerInput.attributesManager.getRequestAttributes();
     let sessionAttributes = handlerInput.attributesManager.getSessionAttributes();
+
+    // Clean the player state on the way out
+    delete sessionAttributes.repeat;
+    delete sessionAttributes.incorrectAnswerButtons;
+    delete sessionAttributes.correct;
+    delete sessionAttributes.answeringButton;
+    delete sessionAttributes.answeringPlayer;
 
     let messageKey = resetGame ? 'GAME_FINISHED' : 'GAME_CANCELLED';
     let responseMessage = ctx.t(messageKey);
@@ -236,11 +243,13 @@ const Game = {
     ctx.openMicrophone = false;
     ctx.endSession = true;
 
-    /** play the exit animations on all buttons in play  */
-    ctx.directives.push(directives.GadgetController.setIdleAnimation({
-      'targetGadgets': sessionAttributes.buttons.map(b => b.buttonId),
-      'animations': settings.ANIMATIONS.EXIT_ANIMATION
-    }));
+    if (sessionAttributes.STATE === settings.STATE.BUTTON_GAME_STATE) {
+      /** play the exit animations on all buttons in play  */
+      ctx.directives.push(directives.GadgetController.setIdleAnimation({
+        'targetGadgets': sessionAttributes.buttons.map(b => b.buttonId),
+        'animations': settings.ANIMATIONS.EXIT_ANIMATION
+      }));
+    }
 
     if (resetGame) {
       /**
@@ -249,7 +258,9 @@ const Game = {
       let finalScoresNarrative = gameHelper.getFormattedScores(handlerInput,
         sessionAttributes.scores, sessionAttributes.playerCount);
 
-      let gameFinishedMessageAttributes = ctx.t('GAME_FINISHED_INTRO');
+      let messageKey = sessionAttributes.STATE === settings.STATE.BUTTON_GAME_STATE ?
+        'GAME_FINISHED_INTRO' : 'SINGLE_PLAYER_GAME_FINISHED_INTRO';
+      let gameFinishedMessageAttributes = ctx.t(messageKey);
 
       // Give a pause if there is nothing to say before the summary
       if (ctx.outputSpeech.length === 0){
@@ -267,8 +278,9 @@ const Game = {
       delete sessionAttributes.correct;
       delete sessionAttributes.scores;
       delete sessionAttributes.buttons;
-      delete sessionAttributes.buttonCount;
       delete sessionAttributes.playerCount;
+      delete sessionAttributes.repeat;
+      delete sessionAttributes.incorrectAnswerButtons;
     } else {
       ctx.outputSpeech.push(responseMessage.outputSpeech);
     }
@@ -278,7 +290,7 @@ const Game = {
    *  Helper function to stop the active input handler if one exists
    */
   stopCurrentInputHandler: function (handlerInput) {
-    logger.log('DEBUG', 'GAME: stop current input handler');
+    logger.debug('GAME: stop current input handler');
     let ctx = handlerInput.attributesManager.getRequestAttributes();
     let sessionAttributes = handlerInput.attributesManager.getSessionAttributes();
 
@@ -311,12 +323,12 @@ const Game = {
     let sessionAttributes = attributesManager.getSessionAttributes();
     let gameEngineEvents = requestEnvelope.request.events;
 
-    logger.log('DEBUG', "GAME: handleGameInputEvent: " + JSON.stringify(gameEngineEvents));
+    logger.debug("GAME: handleGameInputEvent: " + JSON.stringify(gameEngineEvents));
 
     switch (gameEngineEvents[0].name) {
       case 'button_down_event':
         {
-          logger.log('DEBUG', 'Game: handle game input event: button_down_event');
+          logger.debug('Game: handle game input event: button_down_event');
           // Find the player from the list of stored buttons
           let player = sessionAttributes.buttons
             .find(b => b.buttonId == gameEngineEvents[0].inputEvents[0].gadgetId);
@@ -345,7 +357,7 @@ const Game = {
         }
       case 'time_out_event':
         {
-          logger.log('DEBUG', 'Game: handle game input event: time out waiting for button answer');
+          logger.debug('Game: handle game input event: time out waiting for button answer');
 
           delete sessionAttributes.correct;
           delete sessionAttributes.answeringButton;
@@ -374,7 +386,7 @@ const Game = {
           return;
         }
       default:
-        logger.log('ERROR', "UNHANDLED EVENT " + gameEngineEvents[0].name);
+        logger.error("UNHANDLED EVENT " + gameEngineEvents[0].name);
     }
   },
 
@@ -382,7 +394,7 @@ const Game = {
    * Sends directives that reset buttons animations for specified buttons
    */
   resetAnimations: function (handlerInput, buttons) {
-    logger.log('DEBUG', 'GAME: reset animations');
+    logger.debug('GAME: reset animations');
     let ctx = handlerInput.attributesManager.getRequestAttributes();
     ctx.directives.push(directives.GadgetController.setIdleAnimation({
       'targetGadgets': buttons,
@@ -398,7 +410,7 @@ const Game = {
    * Function for receiving voice input to answer a question
    */
   answerQuestion: function (handlerInput) {
-    logger.log('DEBUG', 'GAME: answerQuestion');
+    logger.debug('GAME: answerQuestion');
     let {
       requestEnvelope,
       attributesManager
@@ -421,7 +433,8 @@ const Game = {
         Game.endGame(handlerInput, true);
         return;
       }
-    } else if (!sessionAttributes.answeringButton || !sessionAttributes.answeringPlayer) {
+    } else if ( sessionAttributes.STATE === settings.STATE.BUTTON_GAME_STATE &&
+      (!sessionAttributes.answeringButton || !sessionAttributes.answeringPlayer)) {
       delete sessionAttributes.correct;
       let responseMessage = ctx.t('ANSWER_WITHOUT_BUTTONS');
       ctx.outputSpeech.push(responseMessage.outputSpeech);
@@ -455,7 +468,7 @@ const Game = {
     // use a string similarity match to determine if the spoken answer is close to one of the supplied values
     var matches = stringSimilarity.findBestMatch(answer, answers);
 
-    logger.log('DEBUG', "COMPARING '" + answer + "' to [" + answers + "]: (" + matches.ratings.length + " matches)");
+    logger.debug("COMPARING '" + answer + "' to [" + answers + "]: (" + matches.ratings.length + " matches)");
     // flag to determine if we have a match
     var answered = false;
     // loop through all the matches, in case there is more than one that is good enough to consider
@@ -466,6 +479,7 @@ const Game = {
         if (match.target == correct_answer) {
           // move onto the next question
           sessionAttributes.currentQuestion += 1;
+
           // check to see if we are keeping score yet
           if (!('scores' in sessionAttributes)) {
             sessionAttributes.scores = {};
@@ -478,7 +492,9 @@ const Game = {
             sessionAttributes.scores[sessionAttributes.answeringPlayer] = 1;
           }
 
-          let responseMessage = ctx.t('CORRECT_ANSWER_DURING_PLAY', {
+          let messageKey = sessionAttributes.STATE === settings.STATE.BUTTONLESS_GAME_STATE ?
+            'SINGLE_PLAYER_CORRECT_ANSWER_DURING_PLAY' : 'CORRECT_ANSWER_DURING_PLAY';
+          let responseMessage = ctx.t(messageKey, {
             player_number: sessionAttributes.answeringPlayer
           });
 
@@ -491,8 +507,9 @@ const Game = {
 
           // if we are asking this question for the Nth time, where N > 1, delete that flag
           delete sessionAttributes.repeat;
+          delete sessionAttributes.incorrectAnswerButtons;
 
-          logger.log('DEBUG', "Answer provided matched one of the expected answers!");
+          logger.debug("Answer provided matched one of the expected answers!");
           answered = true;
           break;
         }
@@ -500,11 +517,31 @@ const Game = {
     }
     // If we looped through the answer without a match
     if (answered === false) {
-      if (!sessionAttributes.repeat || sessionAttributes.repeat < settings.GAME.MAX_ANSWERS_PER_QUESTION) {
-        logger.log('DEBUG', "Answer provided doesn't seem to match any of the expected answers -> repeat question");
+      if (sessionAttributes.STATE === settings.STATE.BUTTONLESS_GAME_STATE) {
+        // In a buttonless game we will not repeat the question, just mark is wrong and move to the next one
+        sessionAttributes.currentQuestion += 1;
+        let responseMessage = ctx.t('SINGLE_PLAYER_INCORRECT_ANSWER_DURING_PLAY', {
+          player_number: sessionAttributes.answeringPlayer
+        });
+        ctx.outputSpeech.push(settings.AUDIO.INCORRECT_ANSWER_AUDIO);
+        ctx.outputSpeech.push(responseMessage.outputSpeech);
+        sessionAttributes.correct = false;
+      } else if (typeof sessionAttributes.repeat === 'undefined' ||
+        (sessionAttributes.repeat < settings.GAME.MAX_ANSWERS_PER_QUESTION &&
+        sessionAttributes.repeat + 1 < sessionAttributes.playerCount)) {
+        // We will repeat if we've asked less the max answers per question and there is at least one player
+        // available to answer (each player only get's one shot at answering)
+        logger.debug("Answer provided doesn't seem to match any of the expected answers -> repeat question");
         // Flag this question for repeat
         let repeatCount = sessionAttributes.repeat || 0;
         sessionAttributes.repeat = parseInt(repeatCount, 10) + 1;
+
+        // But don't let the same player answer again
+        if (sessionAttributes.incorrectAnswerButtons){
+          sessionAttributes.incorrectAnswerButtons.push(sessionAttributes.answeringButton);
+        } else {
+          sessionAttributes.incorrectAnswerButtons = [sessionAttributes.answeringButton];
+        }
 
         let responseMessage = ctx.t('INCORRECT_ANSWER_DURING_PLAY', {
           player_number: sessionAttributes.answeringPlayer
@@ -514,9 +551,11 @@ const Game = {
         sessionAttributes.correct = false;
       } else {
         sessionAttributes.currentQuestion += 1;
-        logger.log('DEBUG', "Answer provided doesn't seem to match any of the expected answers -> skip question");
+
+        logger.debug("Answer provided doesn't seem to match any of the expected answers -> skip question");
 
         delete sessionAttributes.repeat;
+        delete sessionAttributes.incorrectAnswerButtons;
 
         let responseMessage;
         if (sessionAttributes.currentQuestion >= settings.GAME.QUESTIONS_PER_GAME) {
@@ -532,6 +571,7 @@ const Game = {
 
         ctx.outputSpeech.push(settings.AUDIO.INCORRECT_ANSWER_AUDIO);
         ctx.outputSpeech.push(responseMessage.outputSpeech);
+        ctx.outputSpeech.push("<break time='2s'/>");
         sessionAttributes.correct = false;
       }
     }
@@ -553,7 +593,13 @@ const Game = {
     let ctx = attributesManager.getRequestAttributes();
     let questions = ctx.t('QUESTIONS');
 
-    logger.log('DEBUG', 'GAME: askQuestion (currentQuestion = ' + sessionAttributes.currentQuestion + ')');
+    logger.debug('GAME: askQuestion (currentQuestion = ' + sessionAttributes.currentQuestion + ')');
+
+    if (!isFollowingAnswer){
+      // Clean repeat state
+      delete sessionAttributes.repeat;
+      delete sessionAttributes.incorrectAnswerButtons;
+    }
 
     sessionAttributes.inputHandlerId = requestEnvelope.request.requestId;
 
@@ -568,14 +614,14 @@ const Game = {
     if (!sessionAttributes.orderedQuestions ||
       (currentQuestion === 1 && !('repeat' in sessionAttributes))) {
       if (settings.GAME.SHUFFLE_QUESTIONS) {
-        logger.log('DEBUG', 'GamePlay: producing ordered question list for new game (using shuffling)!');
+        logger.debug('GamePlay: producing ordered question list for new game (using shuffling)!');
         // if this is the first question, then shuffle the questions
         let orderedQuestions = gameHelper.shuffleList(questions.map(q => q.index))
           .slice(0, settings.GAME.QUESTIONS_PER_GAME);
         // and store the ordered list of questions in the attributes
         sessionAttributes.orderedQuestions = orderedQuestions;
       } else {
-        logger.log('DEBUG', 'GamePlay: producing ordered question list for new game (shuffling disabled)!');
+        logger.debug('GamePlay: producing ordered question list for new game (shuffling disabled)!');
         sessionAttributes.orderedQuestions = questions.map(q => q.index)
           .slice(0, settings.GAME.QUESTIONS_PER_GAME);
       }
@@ -583,14 +629,13 @@ const Game = {
 
     let shuffledQuestionIndex = sessionAttributes.orderedQuestions[currentQuestion - 1];
     let nextQuestion = questions.find(q => q.index == shuffledQuestionIndex);
-    logger.log('DEBUG', 'Ask question: ' + currentQuestion + ' of ' + settings.GAME.QUESTIONS_PER_GAME +
+    logger.debug('Ask question: ' + currentQuestion + ' of ' + settings.GAME.QUESTIONS_PER_GAME +
       ', next question: ' + JSON.stringify(nextQuestion, null, 2));
     if (!nextQuestion || currentQuestion > settings.GAME.QUESTIONS_PER_GAME) {
       /* call the 'endGame' helper to process the end of game logic */
       return Game.endGame(handlerInput, true);
     } else {
       let interstitialDelay = isFollowingAnswer ? 6000 : 3000;
-
       let questionsPerRound = parseInt(settings.GAME.QUESTIONS_PER_ROUND, 10);
 
       // check to see if it's time to generate and recite a game round summary
@@ -608,10 +653,12 @@ const Game = {
 
       if ('correct' in sessionAttributes) {
         // player answered the question - either correctly, or incorrectly
-        let messageKey = 'ANSWER_QUESTION_INCORRECT_DISPLAY';
+        let messageKey = sessionAttributes.STATE === settings.STATE.BUTTON_GAME_STATE ?
+          'ANSWER_QUESTION_INCORRECT_DISPLAY' : 'SINGLE_PLAYER_ANSWER_QUESTION_INCORRECT_DISPLAY';
         let image = settings.pickRandom(settings.IMAGES.INCORRECT_ANSWER_IMAGES);
         if (sessionAttributes.correct) {
-          messageKey = 'ANSWER_QUESTION_CORRECT_DISPLAY';
+          messageKey = sessionAttributes.STATE === settings.STATE.BUTTON_GAME_STATE ?
+          'ANSWER_QUESTION_CORRECT_DISPLAY' : 'SINGLE_PLAYER_ANSWER_QUESTION_CORRECT_DISPLAY';
           image = settings.pickRandom(settings.IMAGES.CORRECT_ANSWER_IMAGES);
         }
         let responseMessage = ctx.t(messageKey, {
@@ -626,31 +673,55 @@ const Game = {
         ctx.render(handlerInput, responseMessage);
       }
 
-      let questionSpeech = nextQuestion.question;
+      // Use a shorter break for buttonless games
+      let breakTime = sessionAttributes.STATE === settings.STATE.BUTTON_GAME_STATE ? 4 : 1;
+      let answers = `<break time='${breakTime}s'/> Is it `;
       if (nextQuestion.answers) {
-        let answers = "<break time='4s'/> Is it ";
         if (nextQuestion.answers.length > 1) {
           answers += nextQuestion.answers.slice(0, -1).join(', ') + ", or, " +
             nextQuestion.answers[nextQuestion.answers.length - 1];
         } else {
           answers = nextQuestion.answers[0];
         }
-        questionSpeech += ' ' + answers + "? ";
+        answers += "?";
+      }
+      ctx.outputSpeech.push(nextQuestion.question);
+      ctx.outputSpeech.push(answers);
+
+      // add waiting sound only for button games, add a reprompt for buttonless
+      if (sessionAttributes.STATE === settings.STATE.BUTTON_GAME_STATE) {
+        ctx.outputSpeech.push(settings.AUDIO.WAITING_FOR_BUZZ_IN_AUDIO);
+      } else {
+        ctx.reprompt.push(answers);
       }
 
-      // add waiting sound
-      ctx.outputSpeech.push(questionSpeech);
-      ctx.outputSpeech.push(settings.AUDIO.WAITING_FOR_BUZZ_IN_AUDIO);
+      if (sessionAttributes.STATE === settings.STATE.BUTTON_GAME_STATE){
+        // Button game - prep the buttons for buzz in
+        Game.animateButtonsAfterAnswer(handlerInput);
+        Game.sendAnswerInterstitial(handlerInput, interstitialDelay);
 
-      logger.log('DEBUG', "== QUESTION == " + nextQuestion.index);
+        delete sessionAttributes.answeringButton;
+        delete sessionAttributes.answeringPlayer;
+      } else {
+        // Buttonless game - be ready for an answer immediately from the only player
+        sessionAttributes.waitingForAnswer = true;
+        sessionAttributes.answeringPlayer = 1;
+        ctx.openMicrophone = true;
 
-      Game.animateButtonsAfterAnswer(handlerInput);
+        // Buttonless game - render the ui for the question immediately as well
+        let responseMessage = ctx.t('ASK_QUESTION_DISPLAY', {
+          question_number: currentQuestion
+        });
+        responseMessage.displayText = nextQuestion.question;
+        if (typeof sessionAttributes.correct !== 'undefined') {
+          responseMessage.image = sessionAttributes.correct ?
+          settings.pickRandom(settings.IMAGES.CORRECT_ANSWER_IMAGES) :
+          settings.pickRandom(settings.IMAGES.INCORRECT_ANSWER_IMAGES);
+        }
+        ctx.render(handlerInput, responseMessage);
+      }
 
-      delete sessionAttributes.answeringButton;
-      delete sessionAttributes.answeringPlayer;
       delete sessionAttributes.correct;
-
-      return Game.sendAnswerInterstitial(handlerInput, interstitialDelay);
     }
   },
 
@@ -658,7 +729,7 @@ const Game = {
    * Starts an input handler and starts listening for button presses, to answer the question
    */
   listenForAnswer: function (handlerInput) {
-    logger.log('DEBUG', 'GAME: listen for answer');
+    logger.debug('GAME: listen for answer');
     let {
       requestEnvelope,
       attributesManager
@@ -667,13 +738,17 @@ const Game = {
     let ctx = attributesManager.getRequestAttributes();
 
 
-    delete sessionAttributes.gameStarting;
     sessionAttributes.inputHandlerId = requestEnvelope.request.requestId;
     sessionAttributes.waitingForAnswer = true;
     ctx.openMicrophone = false;
 
     // create a list of proxies of the same length as the number of buttons we're trying to match
     let gadgetIds = sessionAttributes.buttons.map((b, i) => b.buttonId);
+
+    // Remove buttons that have answered this question incorrectly
+    gadgetIds = gadgetIds.filter(gadgetId => !sessionAttributes.incorrectAnswerButtons ||
+      !sessionAttributes.incorrectAnswerButtons.includes(gadgetId));
+
     ctx.directives.push(directives.GameEngine.startInputHandler({
       'timeout': 25000,
       'recognizers': {
@@ -719,7 +794,7 @@ const Game = {
    * Starts an input handler and starts listening for button presses, to answer the question
    */
   sendAnswerInterstitial: function (handlerInput, interstitialDelay) {
-    logger.log('DEBUG', 'GAME: answer interstitial');
+    logger.debug('GAME: answer interstitial');
     let {
       requestEnvelope,
       attributesManager
@@ -748,7 +823,7 @@ const Game = {
    * Starts an input handler and starts listening for button presses, to answer the question
    */
   animateButtonsAfterAnswer: function (handlerInput) {
-    logger.log('DEBUG', 'GAME: animate buttons after answer');
+    logger.debug('GAME: animate buttons after answer');
     let {
       requestEnvelope,
       attributesManager
@@ -768,8 +843,11 @@ const Game = {
         animation = settings.ANIMATIONS.INCORRECT_ANSWER_ANIMATION;
       }
       // get other players who didn't answer
+      // excluding others who have already answered incorrectly
       var otherPlayers = sessionAttributes.buttons
-        .filter(b => b.buttonId != sessionAttributes.answeringButton)
+        .filter(b => b.buttonId != sessionAttributes.answeringButton &&
+          (!sessionAttributes.incorrectAnswerButtons ||
+          !sessionAttributes.incorrectAnswerButtons.includes(b.buttonId)))
         .map(b => b.buttonId);
 
       if (sessionAttributes.answeringButton) {

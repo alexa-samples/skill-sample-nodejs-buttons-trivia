@@ -17,12 +17,11 @@ const logger = require('../utils/logger.js');
 const messages = require('../config/messages.js');
 const settings = require('../config/settings.js');
 const Game = require('../utils/game.js');
-const RollCall = require('../utils/rollcall.js');
 
 const globalHandlers = {
   RequestInterceptor: {
     async process(handlerInput) {
-      logger.log('DEBUG', 'Global.RequestInterceptor: pre-processing response');
+      logger.debug('Global.RequestInterceptor: pre-processing response');
       let {
         attributesManager,
         requestEnvelope
@@ -35,8 +34,11 @@ const globalHandlers = {
        * Ensure a state in case we're starting fresh
        */
       if (sessionAttributes.STATE == null) {
-        logger.log('DEBUG', 'SETTING STATE TO DEFAULT');
-        sessionAttributes.STATE = settings.STATE.DEFAULT_STATE;
+        logger.debug('SETTING STATE TO START_GAME_STATE');
+        sessionAttributes.STATE = settings.STATE.START_GAME_STATE;
+      } else if (sessionAttributes.STATE === '_GAME_LOOP'){
+        logger.debug('Changing state from _GAME_LOOP for backward compatability.')
+        sessionAttributes.STATE = settings.STATE.BUTTON_GAME_STATE;
       }
 
       // Apply the persistent attributes to the current session
@@ -45,8 +47,8 @@ const globalHandlers = {
       /**
        * Log the request for debug purposes.
        */
-      logger.log('DEBUG', '----- REQUEST -----');
-      logger.log('DEBUG', JSON.stringify(requestEnvelope, null, 2));
+      logger.debug('----- REQUEST -----');
+      logger.debug(JSON.stringify(requestEnvelope, null, 2));
 
       /**
        * Ensure we're starting at a clean state.
@@ -59,7 +61,7 @@ const globalHandlers = {
        * For ease of use we'll attach the utilities for rendering display
        * and handling localized tts to the request attributes.
        */
-      logger.log('DEBUG', 'Initializing messages for ' + handlerInput.requestEnvelope.request.locale);
+      logger.debug('Initializing messages for ' + handlerInput.requestEnvelope.request.locale);
       const localizationClient = i18n.init({
         lng: handlerInput.requestEnvelope.request.locale,
         resources: messages,
@@ -72,12 +74,12 @@ const globalHandlers = {
       ctx.render = function (...args) {
         return display.render(...args);
       }
-      logger.log('DEBUG', 'Global.RequestInterceptor: pre-processing response complete');
+      logger.debug('Global.RequestInterceptor: pre-processing response complete');
     }
   },
   ResponseInterceptor: {
     async process(handlerInput) {
-      logger.log('DEBUG', 'Global.ResponseInterceptor: post-processing response');
+      logger.debug('Global.ResponseInterceptor: post-processing response');
       let {
         attributesManager,
         responseBuilder
@@ -85,30 +87,30 @@ const globalHandlers = {
       let ctx = attributesManager.getRequestAttributes();
       let sessionAttributes = attributesManager.getSessionAttributes();
       let persistentAtttributes = await attributesManager.getPersistentAttributes();
-        
+
       /**
        * Log the attributes and response for debug purposes.
        */
-      logger.log('DEBUG', '----- REQUEST ATTRIBUTES -----');
-      logger.log('DEBUG', JSON.stringify(ctx, null, 2));
+      logger.debug('----- REQUEST ATTRIBUTES -----');
+      logger.debug(JSON.stringify(ctx, null, 2));
 
-      logger.log('DEBUG', '----- SESSION ATTRIBUTES -----');
-      logger.log('DEBUG', JSON.stringify(sessionAttributes, null, 2));
+      logger.debug('----- SESSION ATTRIBUTES -----');
+      logger.debug(JSON.stringify(sessionAttributes, null, 2));
 
-      logger.log('DEBUG', '----- CURRENT PERSISTENT ATTRIBUTES -----');
-      logger.log('DEBUG', JSON.stringify(persistentAtttributes, null, 2));
+      logger.debug('----- CURRENT PERSISTENT ATTRIBUTES -----');
+      logger.debug(JSON.stringify(persistentAtttributes, null, 2));
 
       /**
        * Build the speech response.
        */
       if (ctx.outputSpeech.length > 0) {
         let outputSpeech = ctx.outputSpeech.join(' ');
-        logger.log('DEBUG', 'Global.ResponseInterceptor: adding ' +
+        logger.debug('Global.ResponseInterceptor: adding ' +
           ctx.outputSpeech.length + ' speech parts');
         responseBuilder.speak(outputSpeech);
       }
       if (ctx.reprompt.length > 0) {
-        logger.log('DEBUG', 'Global.ResponseInterceptor: adding ' +
+        logger.debug('Global.ResponseInterceptor: adding ' +
           ctx.outputSpeech.length + ' speech reprompt parts');
         let reprompt = ctx.reprompt.join(' ');
         responseBuilder.reprompt(reprompt);
@@ -127,7 +129,7 @@ const globalHandlers = {
        * Apply the custom directives to the response.
        */
       if (Array.isArray(ctx.directives)) {
-        logger.log('DEBUG', 'Global.ResponseInterceptor: processing ' + ctx.directives.length + ' custom directives ');
+        logger.debug('Global.ResponseInterceptor: processing ' + ctx.directives.length + ' custom directives ');
         response.directives = response.directives || [];
         for (let i = 0; i < ctx.directives.length; i++) {
           response.directives.push(ctx.directives[i]);
@@ -142,7 +144,7 @@ const globalHandlers = {
            *      https://developer.amazon.com/docs/gadget-skills/keep-session-open.html
            */
           response.shouldEndSession = false;
-          logger.log('DEBUG', 'Global.ResponseInterceptor: request to open microphone -> shouldEndSession = false');
+          logger.debug('Global.ResponseInterceptor: request to open microphone -> shouldEndSession = false');
         } else {
           if (ctx.endSession){
             // We have explicitely asked for the session to end
@@ -155,8 +157,8 @@ const globalHandlers = {
              */
             delete response.shouldEndSession;
           }
-          
-          logger.log('DEBUG', 'Global.ResponseInterceptor: request to open microphone -> delete shouldEndSession');
+
+          logger.debug('Global.ResponseInterceptor: request to open microphone -> delete shouldEndSession');
         }
       }
 
@@ -165,21 +167,21 @@ const globalHandlers = {
        */
       attributesManager.setPersistentAttributes(sessionAttributes);
       await attributesManager.savePersistentAttributes();
-      logger.log('DEBUG', '----- NEW PERSISTENT ATTRIBUTES -----');
-      logger.log('DEBUG', JSON.stringify(persistentAtttributes, null, 2));
+      logger.debug('----- NEW PERSISTENT ATTRIBUTES -----');
+      logger.debug(JSON.stringify(persistentAtttributes, null, 2));
 
       /**
        * Log the attributes and response for debug purposes.
        */
-      logger.log('DEBUG', '----- RESPONSE -----');
-      logger.log('DEBUG', JSON.stringify(response, null, 2));
+      logger.debug('----- RESPONSE -----');
+      logger.debug(JSON.stringify(response, null, 2));
 
       return response;
     }
   },
   DefaultHandler: {
     canHandle(handlerInput) {
-      logger.log('DEBUG', 'Global.DefaultHandler: canHandle');
+      logger.debug('Global.DefaultHandler: canHandle');
 
       /**
        * Catch all for requests.
@@ -187,7 +189,7 @@ const globalHandlers = {
       return true;
     },
     handle(handlerInput) {
-      logger.log('DEBUG', 'Global.DefaultHandler: handle');
+      logger.debug('Global.DefaultHandler: handle');
       let {
         attributesManager,
         responseBuilder
@@ -205,36 +207,9 @@ const globalHandlers = {
       return responseBuilder.getResponse();
     }
   },
-  StartNewGameHandler: {
-    canHandle(handlerInput) {
-      logger.log('DEBUG', 'Global.StartNewGameHandler: canHandle');
-      let request = handlerInput.requestEnvelope.request;
-      return request.type === 'IntentRequest' &&
-        request.intent.name === 'AMAZON.StartOverIntent';
-    },
-    handle(handlerInput) {
-      logger.log('DEBUG', 'Global.StartNewGameHandler: handle');
-      let {
-        attributesManager,
-        responseBuilder
-      } = handlerInput;
-      let sessionAttributes = attributesManager.getSessionAttributes();
-
-      sessionAttributes.resume = false;
-      sessionAttributes.currentQuestion = 0;
-      delete sessionAttributes.buttons;
-      delete sessionAttributes.correct;
-      delete sessionAttributes.answeringButton;
-      delete sessionAttributes.answeringPlayer;
-      delete sessionAttributes.waitingForAnswer;
-
-      RollCall.start(handlerInput);
-      return responseBuilder.getResponse();
-    }
-  },
   HelpHandler: {
     canHandle(handlerInput) {
-      logger.log('DEBUG', 'Global.HelpHandler: canHandle');
+      logger.debug('Global.HelpHandler: canHandle');
       /**
        * Handle all help requests and treat don't know requests as
        * help requests except when in game loop state
@@ -248,10 +223,11 @@ const globalHandlers = {
       return request.type === 'IntentRequest' &&
         (request.intent.name === 'AMAZON.HelpIntent' ||
         (request.intent.name === 'DontKnowIntent' &&
-        sessionAttributes.STATE !== settings.STATE.GAME_LOOP_STATE))
+        sessionAttributes.STATE !== settings.STATE.BUTTON_GAME_STATE &&
+        sessionAttributes.STATE !== settings.STATE.BUTTONLESS_GAME_STATE))
     },
     handle(handlerInput) {
-      logger.log('DEBUG', 'Global.HelpHandler: handle');
+      logger.debug('Global.HelpHandler: handle');
       let {
         attributesManager,
         responseBuilder
@@ -267,10 +243,7 @@ const globalHandlers = {
         case settings.STATE.ROLLCALL_STATE:
           messageKey = 'ROLL_CALL_HELP';
           break;
-        case settings.STATE.ROLLCALL_EXIT_STATE:
-          messageKey = 'ROLL_CALL_EXIT_HELP';
-          break;
-        case settings.STATE.GAME_LOOP_STATE:
+        case settings.STATE.BUTTON_GAME_STATE:
           messageKey = 'GAME_PLAY_HELP';
           // Clean up the in game state if they interrupted for help
           Game.stopCurrentInputHandler(handlerInput);
@@ -291,14 +264,42 @@ const globalHandlers = {
       return responseBuilder.getResponse();
     }
   },
+  /**
+   * Stop and Cancel both respond by saying goodbye and ending the session by not setting openMicrophone
+   */
+  StopCancelHandler: {
+    canHandle(handlerInput) {
+      logger.debug('Global.StopCancelHandler: canHandle');
+      return handlerInput.requestEnvelope.request.type === 'IntentRequest' &&
+        (handlerInput.requestEnvelope.request.intent.name === 'AMAZON.StopIntent' ||
+        handlerInput.requestEnvelope.request.intent.name === 'AMAZON.CancelIntent')
+    },
+    handle(handlerInput) {
+      logger.debug('Global.StopCancelHandler: handle');
+      let {
+        attributesManager,
+        responseBuilder
+      } = handlerInput;
+      let ctx = attributesManager.getRequestAttributes();
+      let {
+        outputSpeech
+      } = ctx.t('GOOD_BYE');
+
+      ctx.outputSpeech.push(outputSpeech);
+      ctx.openMicrophone = false;
+      ctx.endSession = true;
+
+      return responseBuilder.getResponse();
+    }
+  },
   SessionEndedRequestHandler: {
     canHandle(handlerInput) {
-      logger.log('DEBUG', 'Global.SessionEndedRequestHandler: canHandle');
+      logger.debug('Global.SessionEndedRequestHandler: canHandle');
       return handlerInput.requestEnvelope.request.type === 'SessionEndedRequest';
     },
     handle(handlerInput) {
-      logger.log('DEBUG', 'Global.SessionEndedRequestHandler: handle');
-      logger.log('INFO', `Session ended with reason: ${handlerInput.requestEnvelope.request.reason}`);
+      logger.debug('Global.SessionEndedRequestHandler: handle');
+      logger.info(`Session ended with reason: ${handlerInput.requestEnvelope.request.reason}`);
       let {
         attributesManager,
         responseBuilder
@@ -308,8 +309,6 @@ const globalHandlers = {
       /**
        * Clean out the session attributes that won't be persisted
        */
-      delete sessionAttributes.expectingEndSkillConfirmation;
-      delete sessionAttributes.resume;
       delete sessionAttributes.STATE;
 
       /**
@@ -324,13 +323,13 @@ const globalHandlers = {
   ErrorHandler: {
     canHandle() {
       // Handle all errors. We'll just log them.
-      logger.log('DEBUG', 'Global.ErrorHandler: canHandle');
+      logger.debug('Global.ErrorHandler: canHandle');
       return true;
     },
     handle(handlerInput, error) {
-      logger.log('DEBUG', 'Global.ErrorHandler: handle');
-      logger.log('ERROR', 'Global.ErrorHandler: Error = ' + error.message);
-      logger.log('ERROR', JSON.stringify(error, Object.getOwnPropertyNames(error), 2));
+      logger.debug('Global.ErrorHandler: handle');
+      logger.error('Global.ErrorHandler: Error = ' + error.message);
+      logger.error(JSON.stringify(error, Object.getOwnPropertyNames(error), 2));
 
       return handlerInput.responseBuilder
         .speak('An error was encountered while handling your request. Try again later')

@@ -15,27 +15,28 @@ const logger = require('../utils/logger.js');
 const settings = require('../config/settings.js');
 
 /**
- * Handling everything for the GAME_LOOP state.
+ * Handling everything for the BUTTON_GAME_STATE state.
  */
 const gamePlayHandlers = {
   /**
-   * The player has responded 'stop', 'cancel', no' to the option of resuming the previous game.
+   * The player has responded 'stop', 'cancel', 'no', requesting the game end.
    */
-  StopCancelNoHandler: {
+  EndGameHandler: {
     canHandle(handlerInput) {
-      logger.log('DEBUG', 'GAME_LOOP.NoHandler: canHandle');
+      logger.debug('GAME.EndGameHandler: canHandle');
       let {
         attributesManager,
         requestEnvelope
       } = handlerInput;
       return requestEnvelope.request.type === 'IntentRequest' &&
-        (requestEnvelope.request.intent.name === 'AMAZON.NoIntent' ||
-          requestEnvelope.request.intent.name === 'AMAZON.StopIntent' ||
-          requestEnvelope.request.intent.name === 'AMAZON.CancelIntent') &&
-        attributesManager.getSessionAttributes().STATE === settings.STATE.GAME_LOOP_STATE;
+          (requestEnvelope.request.intent.name === 'AMAZON.StopIntent' ||
+          requestEnvelope.request.intent.name === 'AMAZON.CancelIntent' ||
+          requestEnvelope.request.intent.name === 'AMAZON.NoIntent') &&
+        (attributesManager.getSessionAttributes().STATE === settings.STATE.BUTTON_GAME_STATE ||
+        attributesManager.getSessionAttributes().STATE === settings.STATE.BUTTONLESS_GAME_STATE);
     },
     handle(handlerInput) {
-      logger.log('DEBUG', 'GAME_LOOP.NoHandler: handle');
+      logger.debug('GAME.EndGameHandler: handle');
       Game.endGame(handlerInput, false);
       return handlerInput.responseBuilder.getResponse();
     }
@@ -45,36 +46,37 @@ const gamePlayHandlers = {
    */
   GameEventHandler: {
     canHandle(handlerInput) {
-      logger.log('DEBUG', 'GAME_LOOP.GameEventHandler: canHandle');
+      logger.debug('GAME.GameEventHandler: canHandle');
       let {
         attributesManager,
         requestEnvelope
       } = handlerInput;
       return requestEnvelope.request.type === 'GameEngine.InputHandlerEvent' &&
-        attributesManager.getSessionAttributes().STATE === settings.STATE.GAME_LOOP_STATE;
+        attributesManager.getSessionAttributes().STATE === settings.STATE.BUTTON_GAME_STATE;
     },
     handle(handlerInput) {
-      logger.log('DEBUG', 'GAME_LOOP.GameEventHandler: handle');
+      logger.debug('GAME.GameEventHandler: handle');
       Game.handleGameInputEvent(handlerInput);
       return handlerInput.responseBuilder.getResponse();
     }
   },
   /**
-   * Play game has been requested while already in the game play loop
+   * The player has asked to play a game while in the middle of a game, continue on
    */
   PlayGameHandler: {
     canHandle(handlerInput) {
-      logger.log('DEBUG', 'GAME_LOOP.PlayGameHandler: canHandle');
+      logger.debug('GAME.PlayGameHandler: canHandle');
       let {
         attributesManager,
         requestEnvelope
       } = handlerInput;
       return requestEnvelope.request.type === 'IntentRequest' &&
         requestEnvelope.request.intent.name === 'PlayGame' &&
-        attributesManager.getSessionAttributes().STATE === settings.STATE.GAME_LOOP_STATE;
+        (attributesManager.getSessionAttributes().STATE === settings.STATE.BUTTON_GAME_STATE ||
+        attributesManager.getSessionAttributes().STATE === settings.STATE.BUTTONLESS_GAME_STATE);
     },
     handle(handlerInput) {
-      logger.log('DEBUG', 'GAME_LOOP.PlayGameHandler: handle');
+      logger.debug('GAME.PlayGameHandler: handle');
       let { attributesManager, responseBuilder } = handlerInput;
       let ctx = attributesManager.getRequestAttributes();
       let sessionAttributes = attributesManager.getSessionAttributes();
@@ -90,33 +92,33 @@ const gamePlayHandlers = {
     }
   },
   /**
-   * The player has responded 'yes' to 'are you ready'.
+   * Player has responded 'yes' to being ready to start the game
    */
-  YesAskQuestionHandler: {
+  YesHandler: {
     canHandle(handlerInput) {
-      logger.log('DEBUG', 'GAME_LOOP.AskQuestion: canHandle');
+      logger.debug('GAME.YesHandler: canHandle');
       let {
         attributesManager,
         requestEnvelope
       } = handlerInput;
       return requestEnvelope.request.type === 'IntentRequest' &&
-        (requestEnvelope.request.intent.name === 'AskQuestion' ||
-          requestEnvelope.request.intent.name === 'AMAZON.YesIntent') &&
-        attributesManager.getSessionAttributes().STATE === settings.STATE.GAME_LOOP_STATE;
+        requestEnvelope.request.intent.name === 'AMAZON.YesIntent' &&
+        (attributesManager.getSessionAttributes().STATE === settings.STATE.BUTTON_GAME_STATE ||
+        attributesManager.getSessionAttributes().STATE === settings.STATE.BUTTONLESS_GAME_STATE);
     },
     handle(handlerInput) {
-      logger.log('DEBUG', 'GAME_LOOP.AskQuestion: handle');
+      logger.debug('GAME.YesHandler: handle');
 
       Game.askQuestion(handlerInput, false);
       return handlerInput.responseBuilder.getResponse();
     }
   },
   /**
-   * The player has responded with an answer.
+   * The player is answering a question.
    */
   AnswerHandler: {
     canHandle(handlerInput) {
-      logger.log('DEBUG', 'GAME_LOOP.AnswerHandler: canHandle');
+      logger.debug('GAME.AnswerHandler: canHandle');
       let {
         attributesManager,
         requestEnvelope
@@ -124,20 +126,21 @@ const gamePlayHandlers = {
       return requestEnvelope.request.type === 'IntentRequest' &&
         (requestEnvelope.request.intent.name === 'AnswerQuestionIntent' ||
           requestEnvelope.request.intent.name === 'AnswerOnlyIntent') &&
-        attributesManager.getSessionAttributes().STATE === settings.STATE.GAME_LOOP_STATE;
+          (attributesManager.getSessionAttributes().STATE === settings.STATE.BUTTON_GAME_STATE ||
+          attributesManager.getSessionAttributes().STATE === settings.STATE.BUTTONLESS_GAME_STATE);
     },
     handle(handlerInput) {
-      logger.log('DEBUG', 'GAME_LOOP.AnswerHandler: handle');
+      logger.debug('GAME.AnswerHandler: handle');
       Game.answerQuestion(handlerInput);
       return handlerInput.responseBuilder.getResponse();
     }
   },
   /**
-   * The player has responded 'don''t know' or 'next'.
+   * The player has responded 'don't know', 'next', or similar.
    */
   DontKnowNextHandler: {
     canHandle(handlerInput) {
-      logger.log('DEBUG', 'GAME_LOOP.DontKnowNextHandler: canHandle');
+      logger.debug('GAME.DontKnowNextHandler: canHandle');
       let {
         attributesManager,
         requestEnvelope
@@ -145,20 +148,21 @@ const gamePlayHandlers = {
       return requestEnvelope.request.type === 'IntentRequest' &&
         (requestEnvelope.request.intent.name === 'DontKnowIntent' ||
           requestEnvelope.request.intent.name === 'AMAZON.NextIntent') &&
-        attributesManager.getSessionAttributes().STATE === settings.STATE.GAME_LOOP_STATE;
+          (attributesManager.getSessionAttributes().STATE === settings.STATE.BUTTON_GAME_STATE ||
+          attributesManager.getSessionAttributes().STATE === settings.STATE.BUTTONLESS_GAME_STATE);
     },
     handle(handlerInput) {
-      logger.log('DEBUG', 'GAME_LOOP.DontKnowNextHandler: handle');
+      logger.debug('GAME.DontKnowNextHandler: handle');
       let { attributesManager, responseBuilder } = handlerInput;
       let sessionAttributes = attributesManager.getSessionAttributes();
       let ctx = attributesManager.getRequestAttributes();
 
       sessionAttributes.currentQuestion = parseInt(sessionAttributes.currentQuestion || 0, 10) + 1;
-      delete sessionAttributes.repeat;
+
       let isLastQuestion = parseInt(sessionAttributes.currentQuestion || 1, 10) > settings.GAME.QUESTIONS_PER_GAME;
       let messageKey = isLastQuestion ? 'PLAY_GAME_SKIP_LAST_QUESTION' : 'PLAY_GAME_SKIP_QUESTION';
       let responseMessage = ctx.t(messageKey, sessionAttributes.currentQuestion);
-      ctx.outputSpeech.push(responseMessage.outputSpeech + "<break time='1s'/>")
+      ctx.outputSpeech.push(responseMessage.outputSpeech + "<break time='1s'/>");
 
       Game.askQuestion(handlerInput, false);
       return responseBuilder.getResponse();

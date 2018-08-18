@@ -20,8 +20,7 @@ const settings = require('./config/settings.js');
 const GlobalHandlers = require('./handlers/globalHandlers');
 const StartHandlers = require('./handlers/startHandlers.js');
 const RollCallHandlers = require('./handlers/rollCallHandlers.js');
-const RollCallExitHandlers = require('./handlers/rollCallExitHandlers.js');
-const GameLoopHandlers = require('./handlers/gamePlayHandlers.js');
+const GamePlayHandlers = require('./handlers/gamePlayHandlers.js');
 
 /**
  * Lambda setup.
@@ -29,25 +28,22 @@ const GameLoopHandlers = require('./handlers/gamePlayHandlers.js');
 exports.handler = function (event, context) {
   let factory = Alexa.SkillBuilders.standard()
     .addRequestHandlers(
-      GameLoopHandlers.AnswerHandler,
-      GameLoopHandlers.DontKnowNextHandler,
-      GameLoopHandlers.GameEventHandler,
-      GameLoopHandlers.PlayGameHandler,
-      GameLoopHandlers.StopCancelNoHandler,
-      GameLoopHandlers.YesAskQuestionHandler,
-      RollCallExitHandlers.YesHandler,
-      RollCallExitHandlers.NoHandler,
-      RollCallHandlers.AnswerQuestionHandler,
-      RollCallHandlers.GameEventHandler,
-      RollCallHandlers.PlayerCountHandler,
+      GamePlayHandlers.AnswerHandler,
+      GamePlayHandlers.DontKnowNextHandler,
+      GamePlayHandlers.GameEventHandler,
+      GamePlayHandlers.PlayGameHandler,
+      GamePlayHandlers.EndGameHandler,
+      GamePlayHandlers.YesHandler,
       RollCallHandlers.YesHandler,
       RollCallHandlers.NoHandler,
-      StartHandlers.LaunchPlayGameRequest,
+      RollCallHandlers.GameEventHandler,
+      StartHandlers.PlayerCountHandler,
+      StartHandlers.YesHandler,
       StartHandlers.NoHandler,
-      StartHandlers.HelpDontKnowHandler,
-      StartHandlers.StopCancelHandler,
-      GlobalHandlers.StartNewGameHandler,
+      StartHandlers.LaunchPlayGameHandler,
+      StartHandlers.StartNewGameHandler,
       GlobalHandlers.HelpHandler,
+      GlobalHandlers.StopCancelHandler,
       GlobalHandlers.SessionEndedRequestHandler,
       GlobalHandlers.DefaultHandler
     )
