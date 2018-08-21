@@ -22,7 +22,7 @@
       ![JSON Editor](./images/json.png)
 
 	2. Next, select the **Invocation** tab. Change the **Skill Invocation Name** from the default provided. This is the name that your users will need to say to start your skill.
-  3. Click **Save Model** and then **Build Model**.
+	3. Click **Save Model** and then **Build Model**.
 
   **Note:** You should notice that **Intents** and **Slot Types** will auto populate based on the JSON Interaction Model that you have now applied to your skill. Feel free to explore the changes here, to learn about **Intents**, **Slots**, and **Utterances** open our [technical documentation in a new tab](https://developer.amazon.com/docs/custom-skills/create-intents-utterances-and-slots.html).
 
