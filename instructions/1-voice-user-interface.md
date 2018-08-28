@@ -22,13 +22,24 @@
       ![JSON Editor](./images/json.png)
 
 	2. Next, select the **Invocation** tab. Change the **Skill Invocation Name** from the default provided. This is the name that your users will need to say to start your skill.
-	3. Click **Save Model** and then **Build Model**.
+	3. Click **Save Model**.
 
   **Note:** You should notice that **Intents** and **Slot Types** will auto populate based on the JSON Interaction Model that you have now applied to your skill. Feel free to explore the changes here, to learn about **Intents**, **Slots**, and **Utterances** open our [technical documentation in a new tab](https://developer.amazon.com/docs/custom-skills/create-intents-utterances-and-slots.html).
 
 7. **Optional:** Select an intent by expanding the **Intents** from the left side navigation panel. Add some more sample utterances for your newly generated intents. Think of all the different ways that a user could request to make a specific intent happen. A few examples are provided. Be sure to click **Save Model** and **Build Model** after you're done making changes here.
 
-8. If your interaction model builds successfully, proceed to the next step. If not, you should see an error. Try to resolve the errors. In our next step of this guide, we will be creating our Lambda function in the AWS developer console, but keep this browser tab open, because we will be returning here on [Page #3: Connect VUI to Code](./3-connect-vui-to-code.md).
+8. **Enable Interfaces for Your Game**
+    1. On the left hand navigation panel, select the **Interfaces** tab.
+
+        ![Interfaces](./images/interfaces.png)
+
+	2. On the resulting page enable the **Display Interface**, **Gadget Controller**, and **Game Engine**.
+
+        ![Gadget Interfaces](./images/gadget-interfaces.png)
+
+	3. Click **Save Interfaces** and then **Build Model**.
+
+9. If your interaction model builds successfully, proceed to the next step. If not, you should see an error. Try to resolve the errors. In our next step of this guide, we will be creating our Lambda function in the AWS developer console, but keep this browser tab open, because we will be returning here on [Page #3: Connect VUI to Code](./3-connect-vui-to-code.md).
 
 
      If you get an error from your interaction model, check through this list:
