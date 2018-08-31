@@ -112,8 +112,9 @@ const startHandlers = {
       let sessionAttributes = attributesManager.getSessionAttributes();
       let ctx = attributesManager.getRequestAttributes();
 
-      sessionAttributes.playerCount = isNaN(requestEnvelope.request.intent.slots.players) ?
-        0 : parseInt(requestEnvelope.request.intent.slots.players.value, 10);
+      sessionAttributes.playerCount = requestEnvelope.request.intent.slots.players && 
+        !isNaN(requestEnvelope.request.intent.slots.players.value) ?
+        parseInt(requestEnvelope.request.intent.slots.players.value, 10) : 0;
 
       let validPlayerCount = sessionAttributes.playerCount &&
         (sessionAttributes.playerCount <= settings.GAME.MAX_PLAYERS) && (sessionAttributes.playerCount > 0);
