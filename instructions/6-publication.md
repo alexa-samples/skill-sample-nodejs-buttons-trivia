@@ -12,6 +12,14 @@ We are almost done!  The last step is to add the metadata that your skill will u
 
 1. Select the **Distribution** link  from the top navigation menu.
 
+#### NOTE
+
+You will fill out all of the fields in the **Distribution** section for every locale you have created a language model for. We recommend submitting to the US and UK at a minimum. In this example we have created models for both and will need to fill out these questions for each.
+
+![UK Store](./images/uk-store.png)
+
+![US Store](./images/us-store.png)
+
 2. Fill out the form fields per the guidance on the screen. Hover over the question mark icons for details regarding each respective field. **Fields marked with an Asterisk, are required!**
 	* Take the time to get these right so that your skill will pass certification!
 
@@ -54,8 +62,6 @@ We are almost done!  The last step is to add the metadata that your skill will u
 
 10. When you're ready, click **Save and Continue** at the bottom of the screen to move onto the **Privacy & Compliance** section.
 
-**Note**: If your game has multiple languages you will go through the distribution section once for each language before moving to **Privacy & Compliance**.
-
 ### Privacy and Compliance
 
 1. **Does this skill allow users to make purchases or spend real money?** For this trivia skill, the answer is no.  For future skills, make sure you answer this appropriately.
@@ -92,9 +98,13 @@ We are almost done!  The last step is to add the metadata that your skill will u
 
 ### Availability
 
-1. Here you can select to make this skill available to the public or just your business as well as decide which regions to publish it in. You can also set up a beta test for you skill. More information is available at [Beta Testing for Alexa Skills](https://developer.amazon.com/docs/custom-skills/skills-beta-testing-for-alexa-skills.html).
+1. Here you can select to make this skill available to the public or just your business. You can also set up a beta test for you skill. More information is available at [Beta Testing for Alexa Skills](https://developer.amazon.com/docs/custom-skills/skills-beta-testing-for-alexa-skills.html).
 
-2. Click the **Save and Continue** button at the bottom of the page to move to the final step before submitting your game for certification.
+2. Select the regions to make your game available to. In this example we language models for both the UK and the US so we will select those countries.
+
+![Availability](./images/availability.png)
+
+3. Click the **Save and Continue** button at the bottom of the page to move to the final step before submitting your game for certification.
 
 ### Certification
 
