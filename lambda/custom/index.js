@@ -55,6 +55,12 @@ exports.handler = function (event, context) {
     factory.withSkillId(settings.APP_ID);
   }
 
+  console.log("===ENV VAR DYNAMODBTABLE===: " + process.env.DYNAMODB_TABLE_NAME);
+  if (process.env.DYNAMODB_TABLE_NAME && process.env.DYNAMODB_TABLE_NAME !== '') {
+    settings.STORAGE.SESSION_TABLE = process.env.DYNAMODB_TABLE_NAME;
+    console.log("===STORAGE SESSION TABLE Set to===: " + settings.STORAGE.SESSION_TABLE);
+  }
+
   if (settings.STORAGE.SESSION_TABLE) {
     factory.withTableName(settings.STORAGE.SESSION_TABLE)
       .withAutoCreateTable(true);
