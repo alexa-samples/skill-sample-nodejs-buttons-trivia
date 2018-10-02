@@ -177,7 +177,7 @@ const rollCallHelper = {
     // 2) second pass through to see if there are any timeout events
     for (let eventIndex = 0; eventIndex < inputEvents.length; eventIndex++) {
       if (inputEvents[eventIndex].name == 'roll_call_timeout') {
-        rollCallHelper.handleRollCallTimeout(handlerInput, inputEvents[eventIndex]);
+        rollCallHelper.handleRollCallTimeout(handlerInput);
       }
     }
   },

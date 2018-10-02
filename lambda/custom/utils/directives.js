@@ -30,14 +30,12 @@ const GameEngine = {
   startInputHandler: function ({
     timeout = RequiredParam('timeout'),
     proxies,
-    maximumHistoryLength,
     recognizers = RequiredParam('recognizers'),
     events = RequiredParam('events')
   } = {}, params) {
     return {
       "type": "GameEngine.StartInputHandler",
       "timeout": (params && params.timeout) || timeout,
-      "maximumHistoryLength": (params && params.maximumHistoryLength) || maximumHistoryLength,
       "proxies": (params && params.proxies) || proxies,
       "recognizers": (params && params.recognizers) || recognizers,
       "events": (params && params.events) || events,
