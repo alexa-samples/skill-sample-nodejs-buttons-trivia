@@ -525,6 +525,14 @@ const Game = {
         });
         ctx.outputSpeech.push(settings.AUDIO.INCORRECT_ANSWER_AUDIO);
         ctx.outputSpeech.push(responseMessage.outputSpeech);
+
+        if (settings.GAME.NOTIFY_CORRECT_ANSWER){
+          responseMessage = ctx.t('NOTIFY_CORRECT_ANSWER', {
+            correct_answer: correct_answer
+          });
+          ctx.outputSpeech.push(responseMessage.outputSpeech);
+        }
+
         sessionAttributes.correct = false;
       } else if (typeof sessionAttributes.repeat === 'undefined' ||
         (sessionAttributes.repeat < settings.GAME.MAX_ANSWERS_PER_QUESTION &&
@@ -571,6 +579,14 @@ const Game = {
 
         ctx.outputSpeech.push(settings.AUDIO.INCORRECT_ANSWER_AUDIO);
         ctx.outputSpeech.push(responseMessage.outputSpeech);
+
+        if (settings.GAME.NOTIFY_CORRECT_ANSWER){
+          responseMessage = ctx.t('NOTIFY_CORRECT_ANSWER', {
+            correct_answer: correct_answer
+          });
+          ctx.outputSpeech.push(responseMessage.outputSpeech);
+        }
+
         ctx.outputSpeech.push("<break time='2s'/>");
         sessionAttributes.correct = false;
       }

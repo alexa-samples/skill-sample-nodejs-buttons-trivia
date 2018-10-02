@@ -40,6 +40,8 @@ module.exports = (function () {
    *      MAX_ANSWERS_PER_QUESTION - Maximum number of answers allowed for each question.
    *      SHUFFLE_QUESTIONS - if enabled, questions are presented in randomized order, otherwise
    *          each question is presented in the same answer as they are listed in the questions file.
+   *      NOTIFY_CORRECT_ANSWER - if enabled Alexa will let the players know what the correct answer
+   *          was if everyone has answered incorrectly
    */
   const GAME_OPTIONS = {
     MAX_PLAYERS: 4,
@@ -47,7 +49,8 @@ module.exports = (function () {
     QUESTIONS_PER_ROUND: 2,
     ANSWER_SIMILARITY: .60,
     MAX_ANSWERS_PER_QUESTION: 4,
-    SHUFFLE_QUESTIONS: true
+    SHUFFLE_QUESTIONS: true,
+    NOTIFY_CORRECT_ANSWER: true
   };
 
   /**

@@ -182,6 +182,9 @@ const messages = {
       'SINGLE_PLAYER_INCORRECT_ANSWER_DURING_PLAY': {
         outputSpeech: "Sorry, wrong answer."
       },
+      'NOTIFY_CORRECT_ANSWER': {
+        outputSpeech: "The correct answer was {{correct_answer}}."
+      },
       'MISUNDERSTOOD_ANSWER': {
         outputSpeech: "Sorry, I didn't get that. Please say again!",
         reprompt: "Please repeat the answer."
