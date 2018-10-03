@@ -14,13 +14,12 @@
 
 	```bash
 	$ cd lambda/custom
-	$ npm install
+	$ npm install --save
 	```
 
-3. Create a **zip archive** of the code and dependencies in the `/lambda/custom` directory.
+3. Create a **zip archive** of the code and dependencies while still in the `/lambda/custom` directory.
 
 	```bash
-	$ cd lambda/custom
 	$ zip -r ../buttons-trivia.zip .
 	```
 
