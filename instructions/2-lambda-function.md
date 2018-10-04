@@ -10,17 +10,16 @@
 	$ git clone https://github.com/alexa/skill-sample-nodejs-buttons-trivia/
 	```
 
-2. **Install** npm dependencies by navigating into the `/lambda/custom` directory and running the npm command: `npm install --save`.
+2. **Install** npm dependencies by navigating into the `/lambda/custom` directory and running the npm command: `npm install`.
 
 	```bash
 	$ cd lambda/custom
 	$ npm install
 	```
 
-3. Create a **zip archive** of the code and dependencies in the `/lambda/custom` directory.
+3. Create a **zip archive** of the code and dependencies while still in the `/lambda/custom` directory.
 
 	```bash
-	$ cd lambda/custom
 	$ zip -r ../buttons-trivia.zip .
 	```
 
