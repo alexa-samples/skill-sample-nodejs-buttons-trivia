@@ -14,6 +14,7 @@
 const questions = require('./questions');
 const settings = require('./settings');
 const GAME_TITLE = 'Better with Buttons Trivia';
+const GAME_TITLE_GERMAN = 'Besser mit Buttons Trivia';
 
 const messages = {
   en: {
@@ -303,6 +304,256 @@ const messages = {
       'QUESTIONS': questions.questions_en_GB,
       'GAME_ROUND_SUMMARY_OUTRO': {
         outputSpeech: "Onward!"
+      }
+    }
+  },
+  de: {
+    translation: {
+      'QUESTIONS': questions.questions_de_DE,
+      'GENERAL_HELP': {
+        outputSpeech: 'Um zu starten, bittet mich einfach, ein Spiel zu spielen.  Was würdet ihr gerne tun? ',
+        reprompt: "Das habe ich leider nicht verstanden. Was wollt ihr jetzt tun?",
+        displayTitle: GAME_TITLE_GERMAN + ' - Hilfe',
+        displayText: 'Dies ist ein Trivia-Spiel für die Echo Buttons.  Um zu starten, bittet mich einfach, ein Spiel zu spielen.'
+      },
+      'UNHANDLED_REQUEST': {
+        outputSpeech: "Das habe ich leider nicht verstanden. Bitte sag das noch einmal!",
+        reprompt: "Bitte sag das noch einmal. Du kannst um Hilfe bitten, wenn du nicht genau weißt, was zu tun ist."
+      },
+      'GOOD_BYE': {
+        outputSpeech: "OK, bis zum nächsten Mal!",
+        reprompt: ''
+      },
+
+      //
+      //--------------------  Start Game Related Prompts -------------------------------------------
+      //
+      'START_GAME': {
+        outputSpeech: "Willkommen bei " + GAME_TITLE +
+          " . Dieses Spiel unterstützt bis zu " + settings.GAME.MAX_PLAYERS +
+          " Spieler.  Wie viele Spieler seid ihr?",
+        reprompt: "Wie viele Spieler?",
+        displayTitle: GAME_TITLE_GERMAN + " - Willkommen",
+        displayText: "Willkommen bei " + GAME_TITLE +
+          ". Dieses Spiel unterstützt bis zu " + settings.GAME.MAX_PLAYERS +
+          " Spieler."
+      },
+      'RESUME_GAME': {
+        outputSpeech: 'OK, wir machen dann da weiter, wo ihr aufgehört habt.  Wie viele Spieler sind dabei?',
+        reprompt: 'Wie viele Spieler?',
+        displayTitle: GAME_TITLE_GERMAN + " - Willkommen",
+        displayText: "Willkommen zurück."
+      },
+      'DONT_RESUME_GAME': {
+        outputSpeech: 'OK, lasst uns ein neues Spiel starten. Wie viele Spieler sind dabei?',
+        reprompt: 'Wie viele Spieler?',
+        displayTitle: GAME_TITLE_GERMAN + " - Willkommen",
+        displayText: "OK, lasst uns ein neues Spiel starten."
+      },
+      'ASK_TO_RESUME': {
+        outputSpeech: "Ihr habt anscheinend bereits ein Spiel für {{player_count}} Spieler begonnen. Wollt ihr das Spiel fortsetzen?",
+        reprompt: 'Möchtet ihr das letzte Spiel fortsetzen?',
+        displayTitle: GAME_TITLE_GERMAN + " - Willkommen",
+        displayText: "Ihr habt bereits ein Spiel für {{player_count}} Spieler begonnen."
+      },
+      'PLAYERCOUNT_INVALID': {
+        outputSpeech: 'Bitte nenn eine Zahl zwischen eins und ' + settings.GAME.MAX_PLAYERS,
+        reprompt: 'Bitte nenn eine Zahl zwischen eins und ' + settings.GAME.MAX_PLAYERS
+      },
+      'SINGLE_PLAYER_GAME_READY': {
+        outputSpeech: ["Fantastisch! Seid ihr bereit, das Spiel zu starten?"],
+        reprompt: "Alles bereit, um das Spiel zu starten?",
+        displayTitle: GAME_TITLE_GERMAN + " - Willkommen",
+        displayText: "Seid ihr bereit, das Spiel zu starten?"
+      },
+
+      //
+      //--------------------  Roll Call Related Prompts -------------------------------------------
+      //
+      'ROLL_CALL_HELP': {
+        outputSpeech: 'Dies ist ein Trivia-Spiel für Echo Buttons.  Für das Spiel muss jeder Spieler sich zuerst anmelden, indem er einen Echo Button drückt. Möchtet ihr mit dem Spiel fortfahren und Spieler für das Spiel anmelden?',
+        reprompt: "Das habe ich leider nicht verstanden. Was wollt ihr jetzt tun?",
+        displayTitle: GAME_TITLE_GERMAN + ' - Hilfe',
+        displayText: 'Für das Spiel muss jeder Spieler sich zuerst anmelden, indem er einen Echo Button drückt. Wollt ihr fortfahren?'
+      },
+      'ROLL_CALL_CONTINUE': {
+        outputSpeech: "OK. Spieler, drückt bitte jetzt auf eure Buttons, damit ich weiß, welche Buttons ihr benutzt.",
+        displayTitle: GAME_TITLE_GERMAN + " - Willkommen",
+        displayText: "Jeder Spieler drückt bitte einmal auf seinen Button, um das Spiel fortzusetzen!"
+      },
+      'ROLL_CALL_TIME_OUT': {
+        outputSpeech: "<say-as interpret-as='interjection'>Oh je</say-as>, " +
+          ", jetzt ist die Zeit abgelaufen und ich habe noch nicht von allen Spielern eine Antwort gehört.  Wollt ihr fortfahren?",
+        reprompt: "sollen wir fortfahren?"
+      },
+      'ROLL_CALL_RESUME_GAME': {
+        outputSpeech: "Jeder Spieler drückt bitte einmal auf seinen Button, um das Spiel fortzusetzen!",
+        displayTitle: GAME_TITLE_GERMAN + " - Willkommen",
+        displayText: "Jeder Spieler drückt bitte einmal auf seinen Button, um das Spiel fortzusetzen!"
+      },
+      'ROLL_CALL_COMPLETE': {
+        outputSpeech: ["Super! Wir können mit dem Spiel beginnen. Seid ihr bereit?",
+        "Toll. Alle Spieler wurden registriert. Seid ihr bereit, das Spiel zu starten?"],
+        reprompt: "Alles bereit, um das Spiel zu starten?",
+        displayTitle: GAME_TITLE_GERMAN + " - Willkommen",
+        displayText: "Seid ihr bereit, das Spiel zu starten?"
+      },
+      'ROLL_CALL_HELLO_PLAYER': {
+        outputSpeech: "Hallo, Spieler {{player_number}}. "
+      },
+      'ROLL_CALL_NEXT_PLAYER_PROMPT': {
+        outputSpeech: "OK, du bist dran Spieler {{player_number}}, drück deinen Button."
+      },
+
+      //
+      //--------------------  Game Play Related Prompts -------------------------------------------
+      //
+      'GAME_CANCELLED': {
+        outputSpeech: "OK, bis zum nächsten Mal!  Ich speichere das Spiel für später, falls ihr es fortsetzen wollt",
+        reprompt: '',
+        displayText: "Bis zum nächsten Mal!",
+        displayTitle: "Vielen Dank, dass ihr gespielt habt!"
+      },
+      'GAME_FINISHED_INTRO': {
+        outputSpeech: "Das Spiel ist beendet. Lasst uns die Endergebnisse hören."
+      },
+      'SINGLE_PLAYER_GAME_FINISHED_INTRO': {
+        outputSpeech: "Das Spiel ist beendet. Lasst uns eure Endergebnisse hören."
+      },
+      'GAME_FINISHED': {
+        outputSpeech: "Vielen Dank, dass ihr gespielt habt",
+        reprompt: '',
+        displayText: "Bis zum nächsten Mal!",
+        displayTitle: "Vielen Dank, dass ihr gespielt habt!"
+      },
+      'PLAY_GAME_FIRST_QUESTION': {
+        outputSpeech: "OK! Lass uns mit dem Spiel anfangen!"
+      },
+      'PLAY_GAME_SKIP_QUESTION': {
+        outputSpeech: "Alles klar. Lasst es uns mit einer anderen Frage versuchen."
+      },
+      'PLAY_GAME_SKIP_LAST_QUESTION': {
+        outputSpeech: "Alles klar. Das war die letzte Frage."
+      },
+      'PLAY_GAME_MID_GAME': {
+        outputSpeech: "OK! Machen wir weiter. Wir sind bei Frage {{current_question}}!"
+      },
+      'ANSWER_TIME_OUT_DURING_PLAY': {
+        outputSpeech: "Ich habe überhaupt keine gedrückten Buttons gehört. Möchtet ihr weiterspielen?",
+        reprompt: "Möchtet ihr weiterspielen?"
+      },
+      'BUZZ_IN_DURING_PLAY': {
+        outputSpeech: "OK Spieler {{player_number}}, wie lautet deine Antwort?",
+        reprompt: "Spieler {{player_number}}, bist du da?"
+      },
+      'CORRECT_ANSWER_DURING_PLAY': {
+        outputSpeech: "Korrekt! Toll gemacht, Spieler {{player_number}}."
+      },
+      'INCORRECT_ANSWER_DURING_PLAY': {
+        outputSpeech: "Das ist leider die falsche Antwort, Spieler {{player_number}}."
+      },
+      'INCORRECT_ANSWER_TOO_MANY_TIMES': {
+        outputSpeech: "Das ist leider die falsche Antwort, Spieler {{player_number}}. " +
+          "Lasst es uns mit einer anderen Frage versuchen."
+      },
+      'SINGLE_PLAYER_CORRECT_ANSWER_DURING_PLAY': {
+        outputSpeech: "Korrekt! Toll gemacht."
+      },
+      'SINGLE_PLAYER_INCORRECT_ANSWER_DURING_PLAY': {
+        outputSpeech: "Das ist leider die falsche Antwort."
+      },
+      'NOTIFY_CORRECT_ANSWER': {
+        outputSpeech: "Die richtige Antwort war {{correct_answer}}."
+      },
+      'MISUNDERSTOOD_ANSWER': {
+        outputSpeech: "Das habe ich leider nicht verstanden. Bitte sag das noch einmal!",
+        reprompt: "Bitte wiederhole die Antwort."
+      },
+      'ANSWER_WITHOUT_BUTTONS': {
+        outputSpeech: "<say-as interpret-as='interjection'>jetzt jetzt</say-as>" +
+          "<break time='1s'/>Drücke deinen Button, um die Frage zu beantworten!"
+      },
+      'ANSWER_BEFORE_QUESTION': {
+        outputSpeech: "Ich habe die Frage noch gar nicht gestellt! Warte, dass ich die Frage stelle, und drücke dann deinen Button, falls du die Antwort kennst! Seid ihr bereit?",
+        reprompt: "Seid ihr bereit für das Spiel?"
+      },
+      'ASK_QUESTION_DISPLAY': {
+        displayTitle: GAME_TITLE_GERMAN + " - Frage {{question_number}}"
+      },
+      'ANSWER_QUESTION_CORRECT_DISPLAY': {
+        displayTitle: GAME_TITLE_GERMAN + " - Spieler {{player_number}}",
+        displayText: ["Toll gemacht! Das ist richtig.",
+        "Toll! Das ist die Antwort.",
+        "Korrekt! Du hast es erraten."]
+      },
+      'ANSWER_QUESTION_INCORRECT_DISPLAY': {
+        displayTitle: GAME_TITLE_GERMAN + " - Spieler {{player_number}}",
+        displayText: ["Hoppla! Das ist nicht richtig.",
+        "Oh nein! Das ist nicht die Antwort.",
+        "Nein, das ist es nicht!"]
+      },
+      'SINGLE_PLAYER_ANSWER_QUESTION_CORRECT_DISPLAY': {
+        displayTitle: GAME_TITLE_GERMAN,
+        displayText: ["Toll gemacht! Das ist richtig.",
+        "Toll! Das ist die Antwort.",
+        "Korrekt! Du hast es erraten."]
+      },
+      'SINGLE_PLAYER_ANSWER_QUESTION_INCORRECT_DISPLAY': {
+        displayTitle: GAME_TITLE_GERMAN,
+        displayText: ["Hoppla! Das ist nicht richtig.",
+        "Oh nein! Das ist nicht die Antwort.",
+        "Nein, das ist es nicht!"]
+      },
+      'ASK_FIRST_QUESTION_NEW_GAME_DISPLAY': {
+        displayTitle: GAME_TITLE_GERMAN + " - Neues Spiel",
+        displayText: "Macht euch zum Start fertig!"
+      },
+      'ASK_FIRST_QUESTION_RESUME_DISPLAY': {
+        displayTitle: GAME_TITLE_GERMAN + " - Spiel fortsetzen",
+        displayText: "Macht euch zum Start fertig!"
+      },
+      'GAME_PLAY_HELP': {
+        outputSpeech: 'Dies ist ein Trivia-Spiel für Echo Buttons. Während des Spiels stelle ich jeweils eine Frage.  Falls du die Antwort kennst, dann drücke deinen Button, um antworten zu können. Ihr erhaltet einen Punkt für jede Frage, die korrekt beantwortet wird. Möchtet ihr mit dem Spiel fortfahren? ',
+        reprompt: "Das habe ich leider nicht verstanden. Was wollt ihr jetzt tun?",
+        displayTitle: GAME_TITLE_GERMAN + " - Hilfe",
+        displayText: 'Während des Spiels stelle ich jeweils eine Frage.  Falls du die Antwort kennst, dann drücke deinen Button, um antworten zu können. Ihr erhaltet einen Punkt für jede Frage, die korrekt beantwortet wird. Möchtet ihr mit dem Spiel fortfahren? '
+      },
+
+      //
+      //--------------------  Round Summary Related Prompts -------------------------------------
+      //
+      'GAME_ROUND_SUMMARY_INTRO': {
+        outputSpeech: "Nach der <say-as interpret-as='ordinal'>{{round}}</say-as> Runde."
+      },
+      'GAME_ROUND_SUMMARY_OUTRO': {
+        outputSpeech: "Lasst uns fortfahren!"
+      },
+
+      //
+      //--------------------  Scoring Related Prompts -------------------------------------------
+      //
+      'SCORING_TIED_NO_ANSWERS': {
+        outputSpeech: "Das Spiel ist unentschieden! Ohne korrekte Antworten. Kriegt ihr das besser hin?"
+      },
+      'SCORING_TIED_ONE_ANSWER': {
+        outputSpeech: "Das Spiel ist unentschieden! Mit einer korrekten Antwort. Was für ein Spiel!"
+      },
+      'SCORING_TIED_MULTIPLE_ANSWERS': {
+        outputSpeech: "Das Spiel ist unentschieden! Mit {{answer_count}} korrekten Antworten. Was für ein Spiel!"
+      },
+
+      'SCORING_SINGLE_PLAYER_NO_ANSWERS': {
+        outputSpeech: "Ihr habt noch keine Frage korrekt beantwortet"
+      },
+      'SCORING_SINGLE_PLAYER_ONE_ANSWER': {
+        outputSpeech: "Ihr habt eine einzige Frage korrekt beantwortet"
+      },
+      'SCORING_SINGLE_PLAYER_MULTIPLE_ANSWERS': {
+        outputSpeech: "Ihr habt {{answer_count}} korrekte Antworten"
+      },
+      'SCORING_MULTI_PLAYERS': {
+        outputSpeech: "An <say-as interpret-as='ordinal'>{{place}}</say-as> Stelle, " +
+          " {{score_details}}"
       }
     }
   }

@@ -1,0 +1,398 @@
+{
+  "interactionModel": {
+    "languageModel": {
+      "invocationName": "besser buttons quiz",
+      "intents": [
+        {
+          "name": "AMAZON.CancelIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.HelpIntent",
+          "samples": [
+            "Wie wird dieses Spiel gespielt",
+            "Wie spielt man dieses Spiel",
+            "Wie spielt man das"
+          ]
+        },
+        {
+          "name": "AMAZON.YesIntent",
+          "samples": [
+            "bereit"
+          ]
+        },
+        {
+          "name": "AMAZON.NoIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.StopIntent",
+          "samples": []
+        },
+        {
+          "name": "PlayerCount",
+          "slots": [
+            {
+              "name": "players",
+              "type": "AMAZON.NUMBER"
+            }
+          ],
+          "samples": [
+            "{players} Spieler",
+            "wir sind {players}",
+            "wir sind {players} Spieler",
+            "wir sind insgesamt {players}",
+            "wir haben {players}",
+            "wir haben {players} Spieler",
+            "es sind {players}",
+            "es sind {players} Spieler"
+          ]
+        },
+        {
+          "name": "AnswerQuestionIntent",
+          "slots": [
+            {
+              "name": "answers",
+              "type": "answers"
+            }
+          ],
+          "samples": [
+            "in {answers}",
+            "eine {answers}",
+            "ein {answers}",
+            "der {answers}",
+            "die {answers}",
+            "das {answers}",
+            "die Antwort lautet {answers}",
+            "meine Antwort lautet {answers}",
+            "ist es {answers}",
+            "es ist {answers}",
+            "es war {answers}",
+            "ist es vielleicht {answers}",
+            "ich glaube es ist {answers}",
+            "ich glaube es war {answers}",
+            "ich glaube es könnte {answers} sein",
+            "ich glaube die Antwort lautet {answers}",
+            "ich glaube die Antwort lautet eventuell {answers}"
+          ]
+        },
+        {
+          "name": "AnswerOnlyIntent",
+          "slots": [
+            {
+              "name": "answers",
+              "type": "answers"
+            }
+          ],
+          "samples": [
+            "{answers}"
+          ]
+        },
+        {
+          "name": "PlayGame",
+          "samples": [
+            "abspielen",
+            "spiel das Spiel",
+            "spiel ein Spiel",
+            "Ich bin bereit für das Spiel",
+            "lass uns spielen",
+            "starte ein Spiel",
+            "starte das Spiel",
+            "lass uns mit dem Spiel anfangen",
+            "spielbereit",
+            "startbereit",
+            "lass uns anfangen",
+            "lass uns loslegen",
+            "beginn mit dem Spiel",
+            "fang an"
+          ]
+        },
+        {
+          "name": "AMAZON.StartOverIntent",
+          "samples": [
+            "beginn mit einem neuen Spiel",
+            "spiel ein neues Spiel",
+            "starte ein neues Spiel",
+            "beginn ein neues Spiel",
+            "Spiel starten",
+            "neues Spiel beginnen",
+            "neues Spiel",
+            "erneut starten"
+          ]
+        },
+        {
+          "name": "DontKnowIntent",
+          "samples": [
+            "ich weiß es nicht",
+            "weiß nicht",
+            "ich bin mir nicht sicher",
+            "ich habe keine Ahnung",
+            "das verstehe ich nicht",
+            "ich habe keinen blassen Schimmer",
+            "mir fällt dazu nichts ein",
+            "keine Ahnung",
+            "ich habe keinen Schimmer",
+            "ich bin ahnungslos"
+          ]
+        },
+        {
+          "name": "AMAZON.MoreIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.NavigateHomeIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.NavigateSettingsIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.NextIntent",
+          "samples": [
+            "überspringen",
+            "überspring diese Frage",
+            "Frage überspringen",
+            "nächste Frage",
+            "weiter zur nächsten Frage",
+            "geh zur nächsten Frage",
+            "ich gebe auf",
+            "wir geben auf"
+          ]
+        },
+        {
+          "name": "AMAZON.PageUpIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.PageDownIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.PreviousIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.ScrollRightIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.ScrollDownIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.ScrollLeftIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.ScrollUpIntent",
+          "samples": []
+        },
+        {
+          "name": "PlayerCountOnly",
+          "slots": [
+            {
+              "name": "players",
+              "type": "AMAZON.NUMBER"
+            }
+          ],
+          "samples": [
+            "{players}"
+          ]
+        }
+      ],
+      "types": [
+        {
+          "values": [
+            {
+              "name": {
+                "value": "Fuchs"
+              }
+            },
+            {
+              "name": {
+                "value": "Wolf"
+              }
+            },
+            {
+              "name": {
+                "value": "Katze"
+              }
+            },
+            {
+              "name": {
+                "value": "Hund"
+              }
+            },
+            {
+              "name": {
+                "value": "Karibu"
+              }
+            },
+            {
+              "name": {
+                "value": "Eisbär"
+              }
+            },
+            {
+              "name": {
+                "value": "Narwal"
+              }
+            },
+            {
+              "name": {
+                "value": "Pinguin"
+              }
+            },
+            {
+              "name": {
+                "value": "Orang-Utan"
+              }
+            },
+            {
+              "name": {
+                "value": "Elefant"
+              }
+            },
+            {
+              "name": {
+                "value": "Kodiakbär"
+              }
+            },
+            {
+              "name": {
+                "value": "Blauwal"
+              }
+            },
+            {
+              "name": {
+                "value": "Olaf"
+              }
+            },
+            {
+              "name": {
+                "value": "Knut"
+              }
+            },
+            {
+              "name": {
+                "value": "Sven"
+              }
+            },
+            {
+              "name": {
+                "value": "Kreuzotter"
+              }
+            },
+            {
+              "name": {
+                "value": "Mokassinschlange"
+              }
+            },
+            {
+              "name": {
+                "value": "Korallenschlange"
+              }
+            },
+            {
+              "name": {
+                "value": "Kobra"
+              }
+            },
+            {
+              "name": {
+                "value": "Fächerfisch"
+              }
+            },
+            {
+              "name": {
+                "value": "Schweinswal"
+              }
+            },
+            {
+              "name": {
+                "value": "Schwarz mit weißen Streifen"
+              }
+            },
+            {
+              "name": {
+                "value": "Weiß mit schwarzen Streifen"
+              }
+            },
+            {
+              "name": {
+                "value": "Muschel"
+              }
+            },
+            {
+              "name": {
+                "value": "Fisch"
+              }
+            },
+            {
+              "name": {
+                "value": "Spinnentier"
+              }
+            },
+            {
+              "name": {
+                "value": "Krustentier"
+              }
+            },
+            {
+              "name": {
+                "value": "Brillenbär"
+              }
+            },
+            {
+              "name": {
+                "value": "Riesenpanda"
+              }
+            },
+            {
+              "name": {
+                "value": "Delfine"
+              }
+            },
+            {
+              "name": {
+                "value": "Braunbär"
+              }
+            },
+            {
+              "name": {
+                "value": "Meute"
+              }
+            },
+            {
+              "name": {
+                "value": "Schule"
+              }
+            },
+            {
+              "name": {
+                "value": "Rudel"
+              }
+            },
+            {
+              "name": {
+                "value": "Rotte"
+              }
+            },
+            {
+              "name": {
+                "value": "Fliegender Fisch"
+              }
+            },
+            {
+              "name": {
+                "value": "Thunfisch"
+              }
+            }
+          ],
+          "name": "answers"
+        }
+      ]
+    }
+  }
+}

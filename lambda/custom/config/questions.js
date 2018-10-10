@@ -170,6 +170,67 @@ module.exports = Object.freeze({
           answers: ['dog', 'cat', 'wolf', 'fox'],
           correct_answer: 'wolf'
       }
-
-  ]
+  ],
+  questions_de_DE: [
+    {
+        index: 1,
+        question: 'Wie wird eine Gruppe von Löwen genannt?',
+        answers: ['Rotte', 'Rudel', 'Schule', 'Meute'],
+        correct_answer: 'Rudel'
+    },
+    {
+        index: 2,
+        question: 'Welches ist die einzige aus Südamerika stammende Bärenart?',
+        answers: ['Braunbär', 'Kodiakbär', 'Riesenpanda', 'Brillenbär'],
+        correct_answer: 'Brillenbär'
+    },
+    {
+        index: 3,
+        question: 'Was für eine Art Tier ist ein Seepferdchen?',
+        answers: ['Krustentier', 'Spinnentier', 'Fisch', 'Muschel'],
+        correct_answer: 'Fisch'
+    },
+    {
+        index: 4,
+        question: 'Welche Farbe haben Zebras?',
+        answers: ['Weiß mit schwarzen Streifen', 'Schwarz mit weißen Streifen'],
+        correct_answer: 'Schwarz mit weißen Streifen'
+    },
+    {
+        index: 5,
+        question: 'Was ist das schnellste Wassertier?',
+        answers: ['Schweinswal', 'Fächerfisch', 'Fliegender Fisch', 'Thunfisch'],
+        correct_answer: 'Fächerfisch'
+    },
+    {
+        index: 6,
+        question: 'Welches ist die einzige giftige Schlange in Großbritannien?',
+        answers: ['Kobra', 'Korallenschlange', 'Mokassinschlange', 'Kreuzotter'],
+        correct_answer: 'Kreuzotter'
+    },
+    {
+        index: 7,
+        question: 'Was ist der Name eines berühmten männlichen Eisbären?',
+        answers: ['Sven', 'Knut', 'Olaf'],
+        correct_answer: 'Knut'
+    },
+    {
+        index: 8,
+        question: 'Welches Landsäugetier hat abgesehen vom Menschen die längste Lebensdauer?',
+        answers: ['Blauwal', 'Delfin', 'Elefant', 'Orang-Utan'],
+        correct_answer: 'Elefant'
+    },
+    {
+        index: 9,
+        question: 'Welches Tier bezeichnen die Eskimos als Nanook?',
+        answers: ['Pinguin', 'Narwal', 'Eisbär', 'Karibu'],
+        correct_answer: 'Eisbär'
+    },
+    {
+        index: 10,
+        question: 'Lupus ist der lateinische Name für welches Tier?',
+        answers: ['Hund', 'Katze', 'Wolf', 'Fuchs'],
+        correct_answer: 'Wolf'
+    }
+]
 });
