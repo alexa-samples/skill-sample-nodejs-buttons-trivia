@@ -50,6 +50,16 @@ ASK CLI **will create the skill and the lambda function for you**. The Lambda fu
 	```bash
 	$ ask deploy
 	```
+	
+##### Add DynamoDB permissions to the Lambda role
+
+The ASK CLI automatically created a role for your lambda function to run under that can execute lambda functions and write to cloudwatch logs, but since we are using the [built-in persistence](https://ask-sdk-for-nodejs.readthedocs.io/en/latest/Managing-Attributes.html#persistent-attributes) of the [Alexa Skills Kit for NodeJS SDK](https://github.com/alexa/alexa-skills-kit-sdk-for-nodejs/), we need to add a policy that will allow the role to create/read/write to DynamoDB
+
+1. Sign in to the [AWS Management Console](https://console.aws.amazon.com/console/home)
+2. Navigate to the [IAM Service console](https://console.aws.amazon.com/iam/home) which is located under **Security, Identity & Compliance**.
+3. Click Roles on the left side bar and find the role created for you by the ASK CLI. The name should start with **ask-lambda-**. Click the role name to see the details.
+4. On the Permissions tab, click the **Attach Policy** button
+5. In the search box, search for **AmazonDynamoDBFullAccess**, select the policy by clicking the checkbox to the left, and click the **Attach Policy** button at the bottom of the page.
 
 ### Testing
 
