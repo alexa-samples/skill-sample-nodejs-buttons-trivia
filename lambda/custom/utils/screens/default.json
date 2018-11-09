@@ -1,0 +1,74 @@
+{
+  "type": "APL",
+  "version": "1.0",
+  "import": [
+    {
+      "name": "alexa-layouts",
+      "version": "1.0.0"
+    }
+  ],
+  "layouts": {
+    "BackgroundImage": {
+      "parameters": ["background"],
+      "items": [
+        {
+          "type": "Image",
+          "source": "${background}",
+          "position": "absolute",
+          "width": "100vw",
+          "height": "100vh",
+          "scale": "best-fill"
+        }
+      ]
+    },
+    "TriviaHeader": {
+      "parameters": ["title", "subtitle", "icon"],
+      "items": [
+        {
+          "type": "AlexaHeader",
+          "headerTitle": "${title}${subtitle ? ' - ' + subtitle : ''}",
+          "headerAttributionImage": "${icon}"
+        }
+      ]
+    }
+  },
+  "mainTemplate": {
+    "parameters": ["payload"],
+    "items": [
+      {
+        "type": "Container",
+        "direction": "column",
+        "width": "100vw",
+        "height": "100vh",
+        "items": [
+          {
+            "type": "BackgroundImage",
+            "background": "${payload.buttonTrivia.properties.background}"
+          },
+          {
+            "type": "TriviaHeader",
+            "title": "${payload.buttonTrivia.properties.title}",
+            "icon": "${payload.buttonTrivia.properties.icon}"
+          },
+          {
+            "type": "Text",
+            "text": "${payload.buttonTrivia.properties.subtitle}",
+            "style": "textStyleHeadlineAlt",
+            "textAlign": "${@viewportProfile == @hubRoundSmall ? 'center' : 'left'}",
+            "paddingLeft": "@marginLeft",
+            "paddingRight": "@marginRight"
+          },
+          {
+            "type": "Text",
+            "text": "${payload.buttonTrivia.properties.text}",
+            "style": "textStyleBody",
+            "textAlign": "${@viewportProfile == @hubRoundSmall ? 'center' : 'left'}",
+            "paddingLeft": "@marginLeft",
+            "paddingRight": "@marginRight",
+            "paddingTop": "2vh"
+          }
+        ]
+      }
+    ]
+  }
+}

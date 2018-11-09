@@ -3,6 +3,8 @@
 
 **Important: The Gadgets Skill API is in beta and is subject to change at any time without notice. We welcome your feedback.**
 
+**Important: [Alexa Presentation Language (APL)](https://developer.amazon.com/docs/alexa-presentation-language/apl-overview.html) is in public beta and is subject to change at any time without notice. Stay tuned to the [Alexa Developer Blog](https://developer.amazon.com/blogs/alexa/) for updates.**
+
 This Alexa sample skill is a template for a trivia game which is played with [Echo Buttons](https://www.amazon.com/Echo-Buttons-Alexa-Gadget-Pack/dp/B072C4KCQH) in multiplayer mode but can also be played without buttons in single player mode. Provided a list of interesting questions about a topic, Alexa will select a group of questions to ask the player(s), keep score throughout, and announce the winner at the end of the game.
 
 This sample skill demonstrates how to discover Echo Buttons using [roll call](https://developer.amazon.com/docs/gadget-skills/discover-echo-buttons.html#goals), how to [receive Echo Button events](https://developer.amazon.com/docs/gadget-skills/receive-echo-button-events.html), and how to [animate the Echo Button lights](https://developer.amazon.com/docs/gadget-skills/control-echo-buttons.html#animate).

@@ -1,0 +1,147 @@
+{
+  "type": "APL",
+  "version": "1.0",
+  "import": [
+    {
+      "name": "alexa-layouts",
+      "version": "1.0.0"
+    }
+  ],
+  "layouts": {
+    "BackgroundImage": {
+      "parameters": ["background"],
+      "items": [
+        {
+          "type": "Image",
+          "source": "${background}",
+          "position": "absolute",
+          "width": "100vw",
+          "height": "100vh",
+          "scale": "best-fill"
+        }
+      ]
+    },
+    "TriviaHeader": {
+      "parameters": ["title", "subtitle", "icon"],
+      "items": [
+        {
+          "type": "AlexaHeader",
+          "headerTitle": "${title}${subtitle ? ' - ' + subtitle : ''}",
+          "headerAttributionImage": "${icon}"
+        }
+      ]
+    }
+  },
+  "mainTemplate": {
+    "parameters": ["payload"],
+    "items": [
+      {
+        "type": "Container",
+        "direction": "column",
+        "width": "100vw",
+        "height": "100vh",
+        "items": [
+          {
+            "type": "BackgroundImage",
+            "background": "${payload.buttonTrivia.properties.background}"
+          },
+          {
+            "type": "TriviaHeader",
+            "title": "${payload.buttonTrivia.properties.title}",
+            "icon": "${payload.buttonTrivia.properties.icon}"
+          },
+          {
+            "when": "${@viewportProfile == @hubRoundSmall}",
+            "type": "Container",
+            "direction": "column",
+            "items": [
+              {
+                "type": "Container",
+                "direction": "column",
+                "width": "100vw",
+                "items": [
+                  {
+                    "type": "Text",
+                    "text": "${payload.buttonTrivia.properties.subtitle}",
+                    "style": "textStyleHeadlineAlt",
+                    "textAlign": "center",
+                    "paddingLeft": "@marginLeft",
+                    "paddingRight": "@marginRight"
+                  },
+                  {
+                    "type": "Text",
+                    "text": "${payload.buttonTrivia.properties.text}",
+                    "style": "textStyleBody",
+                    "textAlign": "center",
+                    "paddingLeft": "@marginLeft",
+                    "paddingRight": "@marginRight"
+                  },
+                  {
+                    "type": "Container",
+                    "direction": "column",
+                    "width": "100vw",
+                    "alignItems": "center",
+                    "items": [
+                      {
+                        "type": "Image",
+                        "scale": "best-fit",
+                        "width": "40vw",
+                        "height": "40vh",
+                        "source": "${payload.buttonTrivia.properties.image}"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "when": "${@viewportProfile != @hubRoundSmall}",
+            "type": "Container",
+            "direction": "row",
+            "items": [
+              {
+                "type": "Container",
+                "direction": "column",
+                "width": "60vw",
+                "items": [
+                  {
+                    "type": "Text",
+                    "text": "${payload.buttonTrivia.properties.subtitle}",
+                    "style": "textStyleHeadlineAlt",
+                    "textAlign": "left",
+                    "paddingLeft": "@marginLeft",
+                    "paddingRight": "@marginRight"
+                  },
+                  {
+                    "type": "Text",
+                    "text": "${payload.buttonTrivia.properties.text}",
+                    "style": "textStyleBody",
+                    "textAlign": "left",
+                    "paddingLeft": "@marginLeft",
+                    "paddingRight": "@marginRight"
+                  }
+                ]
+              },
+              {
+                "type": "Container",
+                "direction": "column",
+                "width": "40vw",
+                "items": [
+                  {
+                    "type": "Image",
+                    "align": "top",
+                    "scale": "best-fit",
+                    "width": "40vw",
+                    "height": "40vh",
+                    "source": "${payload.buttonTrivia.properties.image}"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -136,6 +136,7 @@ module.exports = (function () {
    * variety for the user.
    */
   const IMAGES = Object.freeze({
+    GAME_ICON: 'https://d2vbr0xakfjx9a.cloudfront.net/buttons-sm.png',
     BACKGROUND_IMAGES: [
       'https://d2vbr0xakfjx9a.cloudfront.net/bg1.jpg',
       'https://d2vbr0xakfjx9a.cloudfront.net/bg2.jpg'

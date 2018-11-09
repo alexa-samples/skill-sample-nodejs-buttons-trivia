@@ -379,7 +379,8 @@ const Game = {
           let responseMessage = ctx.t('ASK_QUESTION_DISPLAY', {
             question_number: currentQuestion
           });
-          responseMessage.displayText = triviaQuestion.question;
+          responseMessage.question = triviaQuestion.question;
+          responseMessage.answers = triviaQuestion.answers;
           ctx.render(handlerInput, responseMessage);
 
           Game.listenForAnswer(handlerInput);
@@ -671,11 +672,11 @@ const Game = {
         // player answered the question - either correctly, or incorrectly
         let messageKey = sessionAttributes.STATE === settings.STATE.BUTTON_GAME_STATE ?
           'ANSWER_QUESTION_INCORRECT_DISPLAY' : 'SINGLE_PLAYER_ANSWER_QUESTION_INCORRECT_DISPLAY';
-        let image = settings.pickRandom(settings.IMAGES.INCORRECT_ANSWER_IMAGES);
+        let image = settings.IMAGES.INCORRECT_ANSWER_IMAGES[0];
         if (sessionAttributes.correct) {
           messageKey = sessionAttributes.STATE === settings.STATE.BUTTON_GAME_STATE ?
           'ANSWER_QUESTION_CORRECT_DISPLAY' : 'SINGLE_PLAYER_ANSWER_QUESTION_CORRECT_DISPLAY';
-          image = settings.pickRandom(settings.IMAGES.CORRECT_ANSWER_IMAGES);
+          image = settings.IMAGES.CORRECT_ANSWER_IMAGES[0];
         }
         let responseMessage = ctx.t(messageKey, {
           player_number: sessionAttributes.answeringPlayer
@@ -731,8 +732,8 @@ const Game = {
         responseMessage.displayText = nextQuestion.question;
         if (typeof sessionAttributes.correct !== 'undefined') {
           responseMessage.image = sessionAttributes.correct ?
-          settings.pickRandom(settings.IMAGES.CORRECT_ANSWER_IMAGES) :
-          settings.pickRandom(settings.IMAGES.INCORRECT_ANSWER_IMAGES);
+            settings.IMAGES.CORRECT_ANSWER_IMAGES[0] :
+            settings.IMAGES.INCORRECT_ANSWER_IMAGES[0];
         }
         ctx.render(handlerInput, responseMessage);
       }

@@ -1,0 +1,326 @@
+{
+  "document": {
+    "type": "APL",
+    "version": "1.0",
+    "theme": "dark",
+    "import": [
+      {
+        "name": "alexa-layouts",
+        "version": "1.0.0"
+      }
+    ],
+    "layouts": {
+      "BackgroundImage": {
+        "parameters": ["background"],
+        "items": [
+          {
+            "type": "Image",
+            "source": "${background}",
+            "position": "absolute",
+            "width": "100vw",
+            "height": "100vh",
+            "scale": "best-fill"
+          }
+        ]
+      },
+      "TriviaHeader": {
+        "parameters": ["title", "subtitle", "icon"],
+        "items": [
+          {
+            "type": "AlexaHeader",
+            "headerTitle": "${title}${subtitle ? ' - ' + subtitle : ''}",
+            "headerAttributionImage": "${icon}"
+          }
+        ]
+      }
+    },
+    "mainTemplate": {
+      "parameters": ["payload"],
+      "items": [
+        {
+          "type": "Container",
+          "direction": "column",
+          "width": "100vw",
+          "height": "100vh",
+          "items": [
+            {
+              "type": "BackgroundImage",
+              "background": "${payload.buttonTrivia.properties.background}"
+            },
+            {
+              "when": "${@viewportProfile != @hubRoundSmall}",
+              "description": "Container for rectangle screens",
+              "type": "Container",
+              "width": "100vw",
+              "height": "100vh",
+              "items": [
+                {
+                  "type": "TriviaHeader",
+                  "title": "${payload.buttonTrivia.properties.title}",
+                  "icon": "${payload.buttonTrivia.properties.icon}"
+                },
+                {
+                  "type": "Container",
+                  "description": "Question for user",
+                  "direction": "row",
+                  "width": "100vw",
+                  "maxHeight": "30vh",
+                  "paddingBottom": "5vh",
+                  "items": [
+                    {
+                      "type": "Text",
+                      "style": "textStyleBody",
+                      "text": "${payload.buttonTrivia.properties.question.questionText}",
+                      "textAlign": "left",
+                      "paddingLeft": "@marginLeft",
+                      "paddingRight": "@marginRight"
+                    }
+                  ]
+                },
+                {
+                  "type": "Container",
+                  "description": "Answer Row One",
+                  "direction": "row",
+                  "height": "18vh",
+                  "justifyContent": "spaceAround",
+                  "paddingBottom": "1vh",
+                  "paddingTop": "1vh",
+                  "items": [
+                    {
+                      "when": "${payload.buttonTrivia.properties.question.answerA != nil}",
+                      "type": "Frame",
+                      "borderRadius": 25,
+                      "backgroundColor": "${payload.buttonTrivia.properties.answerBoxColor}",
+                      "borderColor": "${payload.buttonTrivia.properties.answerBoxBorderColor}",
+                      "borderWidth": "0.4vw",
+                      "width": "45vw",
+                      "item": {
+                        "type": "Text",
+                        "height": "16vh",
+                        "style": "textStyleBodyAlt",
+                        "text": "${payload.buttonTrivia.properties.question.answerA}",
+                        "textAlign": "center",
+                        "textAlignVertical": "center"
+                      }
+                    },
+                    {
+                      "when": "${payload.buttonTrivia.properties.question.answerB != nil}",
+                      "type": "Frame",
+                      "borderRadius": 25,
+                      "backgroundColor": "${payload.buttonTrivia.properties.answerBoxColor}",
+                      "borderColor": "${payload.buttonTrivia.properties.answerBoxBorderColor}",
+                      "borderWidth": "0.4vw",
+                      "width": "45vw",
+                      "item": {
+                        "type": "Text",
+                        "style": "textStyleBodyAlt",
+                        "height": "16vh",
+                        "text": "${payload.buttonTrivia.properties.question.answerB}",
+                        "textAlign": "center",
+                        "textAlignVertical": "center"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "Container",
+                  "description": "Answer Row Two",
+                  "direction": "row",
+                  "height": "18vh",
+                  "justifyContent": "spaceAround",
+                  "paddingBottom": "1vh",
+                  "paddingTop": "1vh",
+                  "items": [
+                    {
+                      "when": "${payload.buttonTrivia.properties.question.answerC != nil}",
+                      "type": "Frame",
+                      "borderRadius": 25,
+                      "backgroundColor": "${payload.buttonTrivia.properties.answerBoxColor}",
+                      "borderColor": "${payload.buttonTrivia.properties.answerBoxBorderColor}",
+                      "borderWidth": "0.4vw",
+                      "width": "45vw",
+                      "item": {
+                        "type": "Text",
+                        "style": "textStyleBodyAlt",
+                        "height": "16vh",
+                        "text": "${payload.buttonTrivia.properties.question.answerC}",
+                        "textAlign": "center",
+                        "textAlignVertical": "center"
+                      }
+                    },
+                    {
+                      "when": "${payload.buttonTrivia.properties.question.answerD != nil}",
+                      "type": "Frame",
+                      "borderRadius": 25,
+                      "backgroundColor": "${payload.buttonTrivia.properties.answerBoxColor}",
+                      "borderColor": "${payload.buttonTrivia.properties.answerBoxBorderColor}",
+                      "borderWidth": "0.4vw",
+                      "width": "45vw",
+                      "item": {
+                        "type": "Text",
+                        "style": "textStyleBodyAlt",
+                        "height": "16vh",
+                        "text": "${payload.buttonTrivia.properties.question.answerD}",
+                        "textAlign": "center",
+                        "textAlignVertical": "center"
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "when": "${@viewportProfile == @hubRoundSmall}",
+              "description": "Container for rectangle screens",
+              "type": "Container",
+              "width": "100vw",
+              "height": "100vh",
+              "items": [
+                {
+                  "type": "Container",
+                  "description": "Question for user",
+                  "direction": "row",
+                  "width": "100vw",
+                  "maxHeight": "30vh",
+                  "paddingBottom": "5vh",
+                  "items": [
+                    {
+                      "type": "Text",
+                      "style": "textStyleBody",
+                      "text": "${payload.buttonTrivia.properties.question.questionText}",
+                      "textAlign": "left",
+                      "paddingLeft": "@marginLeft",
+                      "paddingRight": "@marginRight"
+                    }
+                  ]
+                },
+                {
+                  "type": "Container",
+                  "description": "Answer Row One",
+                  "direction": "row",
+                  "height": "18vh",
+                  "justifyContent": "spaceAround",
+                  "paddingBottom": "1vh",
+                  "paddingTop": "1vh",
+                  "items": [
+                    {
+                      "when": "${payload.buttonTrivia.properties.question.answerA != nil}",
+                      "type": "Frame",
+                      "borderRadius": 25,
+                      "backgroundColor": "${payload.buttonTrivia.properties.answerBoxColor}",
+                      "borderColor": "${payload.buttonTrivia.properties.answerBoxBorderColor}",
+                      "borderWidth": "0.4vw",
+                      "width": "45vw",
+                      "item": {
+                        "type": "Text",
+                        "height": "16vh",
+                        "style": "textStyleBodyAlt",
+                        "text": "${payload.buttonTrivia.properties.question.answerA}",
+                        "textAlign": "center",
+                        "textAlignVertical": "center"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "Container",
+                  "description": "Answer Row Two",
+                  "direction": "row",
+                  "height": "18vh",
+                  "justifyContent": "spaceAround",
+                  "paddingBottom": "1vh",
+                  "paddingTop": "1vh",
+                  "items": [
+                    {
+                      "when": "${payload.buttonTrivia.properties.question.answerB != nil}",
+                      "type": "Frame",
+                      "borderRadius": 25,
+                      "backgroundColor": "${payload.buttonTrivia.properties.answerBoxColor}",
+                      "borderColor": "${payload.buttonTrivia.properties.answerBoxBorderColor}",
+                      "borderWidth": "0.4vw",
+                      "width": "45vw",
+                      "item": {
+                        "type": "Text",
+                        "style": "textStyleBodyAlt",
+                        "height": "16vh",
+                        "text": "${payload.buttonTrivia.properties.question.answerB}",
+                        "textAlign": "center",
+                        "textAlignVertical": "center"
+                      }
+                    },
+                    {
+                      "when": "${payload.buttonTrivia.properties.question.answerC != nil}",
+                      "type": "Frame",
+                      "borderRadius": 25,
+                      "backgroundColor": "${payload.buttonTrivia.properties.answerBoxColor}",
+                      "borderColor": "${payload.buttonTrivia.properties.answerBoxBorderColor}",
+                      "borderWidth": "0.4vw",
+                      "width": "45vw",
+                      "item": {
+                        "type": "Text",
+                        "style": "textStyleBodyAlt",
+                        "height": "16vh",
+                        "text": "${payload.buttonTrivia.properties.question.answerC}",
+                        "textAlign": "center",
+                        "textAlignVertical": "center"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "Container",
+                  "description": "Answer Row Three",
+                  "direction": "row",
+                  "height": "18vh",
+                  "justifyContent": "spaceAround",
+                  "paddingBottom": "1vh",
+                  "paddingTop": "1vh",
+                  "items": [
+                    {
+                      "when": "${payload.buttonTrivia.properties.question.answerD != nil}",
+                      "type": "Frame",
+                      "borderRadius": 25,
+                      "backgroundColor": "${payload.buttonTrivia.properties.answerBoxColor}",
+                      "borderColor": "${payload.buttonTrivia.properties.answerBoxBorderColor}",
+                      "borderWidth": "0.4vw",
+                      "width": "45vw",
+                      "item": {
+                        "type": "Text",
+                        "style": "textStyleBodyAlt",
+                        "height": "16vh",
+                        "text": "${payload.buttonTrivia.properties.question.answerD}",
+                        "textAlign": "center",
+                        "textAlignVertical": "center"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "dataSources": {
+    "buttonTrivia": {
+      "type": "object",
+      "objectId": "buttonTriviaQuestion",
+      "properties": {
+        "title": "Elon Buttons Trivia",
+        "subtitle": "Question 1",
+        "icon": "https://d2vbr0xakfjx9a.cloudfront.net/buttons-sm.png",
+        "background": "https://d2vbr0xakfjx9a.cloudfront.net/bg1.jpg",
+        "answerBoxColor": "#592aa5",
+        "answerBoxBorderColor": "#77308d",
+        "question": {
+          "questionText": "What is your favorite color? And why in the world would you pick that one?",
+          "answerA": "red",
+          "answerB": "blue",
+          "answerC": "black with white stripes",
+          "answerD": "yellow"
+        }
+      }
+    }
+  }
+}

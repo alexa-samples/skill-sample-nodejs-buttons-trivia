@@ -74,6 +74,9 @@
           },
           {
             "type": "GADGET_CONTROLLER"
+          },
+          {
+            "type": "ALEXA_PRESENTATION_APL"
           }
         ],
         "regions": {

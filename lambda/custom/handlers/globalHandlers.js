@@ -116,13 +116,6 @@ const globalHandlers = {
         responseBuilder.reprompt(reprompt);
       }
 
-      /**
-       * Add the display response
-       */
-      if (ctx.renderTemplate) {
-        responseBuilder.addRenderTemplateDirective(ctx.renderTemplate);
-      }
-
       let response = responseBuilder.getResponse();
 
       /**

@@ -9,83 +9,115 @@
  * express or implied. See the License for the specific language governing
  * permissions and limitations under the License.
  */
-const Alexa = require('ask-sdk');
-const settings = require('../config/settings.js');
-const logger = require('../utils/logger.js');
+const Alexa = require("ask-sdk");
+const settings = require("../config/settings.js");
+const logger = require("../utils/logger.js");
+
+const APL_DIRECTIVE_TYPE = "Alexa.Presentation.APL.RenderDocument";
+const DEFAULT_SCREEN = require("./screens/default.json");
+const IMAGE_SCREEN = require("./screens/image.json");
+const QUESTION_SCREEN = require("./screens/question.json");
+
+const DisplayHelper = {
+  toTitleCase: function (str) {
+    if (str){
+      str = str.toLowerCase().split(' ');
+      for (var i = 0; i < str.length; i++) {
+        str[i] = str[i].charAt(0).toUpperCase() + str[i].slice(1);
+      }
+    }
+    return str ? str.join(' ') : str;
+  }
+}
 
 const Display = {
-  render: function (
-    /* The Alexa request and attributes */
-    handlerInput,
-    {
-      displayTitle,
-      /* primary text content to display */
-      displayText,
-      /* (optional) secondary text content to display */
-      displaySubText,
-      /* a background image to be displayed under the text content */
-      backgroundImage,
-      /* (optional) an image to be displayed on the side of the text content */
-      image
-    } = {}) {
-
+  render: function(handlerInput, responseMessage) {
     let ctx = handlerInput.attributesManager.getRequestAttributes();
+    let gameTitle = ctx.t('GAME_TITLE');
+    let text = Array.isArray(responseMessage.displayText) ?
+      settings.pickRandom(responseMessage.displayText) : responseMessage.displayText;
 
-    /**
-     * Check for display
-     */
-    if (!handlerInput.requestEnvelope.context.System.device.supportedInterfaces.Display) {
-      logger.debug('No display to render.');
-      return;
-    }
+    if (responseMessage.image) {
 
-    if (!displayText) {
-      logger.warn('Render template without primary text!');
-    }
+      logger.debug('=== Render Image===');
 
-    let text = displayText || '';
-    if (Array.isArray(text)) {
-      text = settings.pickRandom(text);
-    }
+      ctx.directives.push({
+        type: APL_DIRECTIVE_TYPE,
+        token: 'btn-trivia-img',
+        version: '1.0',
+        document: IMAGE_SCREEN,
+        datasources: {
+          buttonTrivia: {
+            type: "object",
+            objectId: "buttonTriviaImage",
+            properties: {
+              title: gameTitle,
+              subtitle: responseMessage.displayTitle,
+              icon: settings.IMAGES.GAME_ICON,
+              background: settings.IMAGES.BACKGROUND_IMAGES[0],
+              text: text,
+              image: responseMessage.image
+            }
+          }
+        }
+      });
+    } else if (responseMessage.question) {
 
-    let subText = displaySubText || '';
-    if (Array.isArray(subText)) {
-      subText = settings.pickRandom(subText);
-    }
+      logger.debug('=== Render Question===');
 
-    const background = backgroundImage || settings.pickRandom(settings.IMAGES.BACKGROUND_IMAGES);
-
-    // Rich can handle plain as well
-    const textContent = new Alexa.RichTextContentHelper()
-      .withPrimaryText(text)
-      .withSecondaryText(subText)
-      .getTextContent();
-
-    const renderBackground = new Alexa.ImageHelper()
-      .addImageInstance(background)
-      .getImage();
-
-    if (image) {
-      renderImage = new Alexa.ImageHelper()
-        .addImageInstance(image)
-        .getImage();
-      ctx.renderTemplate = {
-        type: 'BodyTemplate3',
-        backButton: 'HIDDEN',
-        backgroundImage: renderBackground,
-        title: displayTitle,
-        image: renderImage,
-        textContent: textContent
-      }
+      ctx.directives.push({
+        type: APL_DIRECTIVE_TYPE,
+        token: 'btn-trivia-question',
+        version: '1.0',
+        document: QUESTION_SCREEN,
+        datasources: {
+          buttonTrivia: {
+            type: "object",
+            objectId: "buttonTriviaDefault",
+            properties: {
+              title: gameTitle,
+              subtitle: responseMessage.displayTitle,
+              icon: settings.IMAGES.GAME_ICON,
+              background: settings.IMAGES.BACKGROUND_IMAGES[0],
+              answerBoxColor: "#592aa5",
+              answerBoxBorderColor: "#77308d",
+              question: {
+                    questionText: responseMessage.question,
+                    answerA: DisplayHelper.toTitleCase(responseMessage.answers[0]),
+                    answerB: DisplayHelper.toTitleCase(responseMessage.answers[1]),
+                    answerC: DisplayHelper.toTitleCase(responseMessage.answers[2]),
+                    answerD: DisplayHelper.toTitleCase(responseMessage.answers[3])
+                }
+            }
+          }
+        }
+      });
     } else {
-      ctx.renderTemplate = {
-        type: 'BodyTemplate1',
-        backButton: 'HIDDEN',
-        backgroundImage: renderBackground,
-        title: displayTitle,
-        textContent: textContent
-      }
+
+      logger.debug('=== Render Plain===');
+
+      ctx.directives.push({
+        type: APL_DIRECTIVE_TYPE,
+        token: 'btn-trivia',
+        version: '1.0',
+        document: DEFAULT_SCREEN,
+        datasources: {
+          buttonTrivia: {
+            type: "object",
+            objectId: "buttonTriviaDefault",
+            properties: {
+              title: gameTitle,
+              subtitle: responseMessage.displayTitle,
+              icon: settings.IMAGES.GAME_ICON,
+              background: settings.IMAGES.BACKGROUND_IMAGES[0],
+              text: text
+            }
+          }
+        }
+      });
     }
+    logger.info(JSON.stringify(responseMessage, null, 2));
   }
 };
+
 module.exports = Display;
