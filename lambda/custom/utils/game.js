@@ -465,58 +465,71 @@ const Game = {
     let answers = currentQuestion.answers.map(a => gameHelper.normalizeAnswer(a));
     // get the correct answer
     let correct_answer = gameHelper.normalizeAnswer(currentQuestion.correct_answer);
-    // use a string similarity match to determine if the spoken answer is close to one of the supplied values
-    var matches = stringSimilarity.findBestMatch(answer, answers);
 
-    logger.debug("COMPARING '" + answer + "' to [" + answers + "]: (" + matches.ratings.length + " matches)");
-    // flag to determine if we have a match
-    var answered = false;
-    // loop through all the matches, in case there is more than one that is good enough to consider
-    for (var i = 0; i < matches.ratings.length; ++i) {
-      var match = matches.ratings[i];
-      if (match.rating > settings.GAME.ANSWER_SIMILARITY) {
-        // Answer is the correct answer
-        if (match.target == correct_answer) {
-          // move onto the next question
-          sessionAttributes.currentQuestion += 1;
-
-          // check to see if we are keeping score yet
-          if (!('scores' in sessionAttributes)) {
-            sessionAttributes.scores = {};
-            sessionAttributes.scores[sessionAttributes.answeringPlayer] = 1;
-            // if this player already has a score, increment it
-          } else if (sessionAttributes.answeringPlayer in sessionAttributes.scores) {
-            sessionAttributes.scores[sessionAttributes.answeringPlayer] += 1;
-            // otherwise just start a new score
-          } else {
-            sessionAttributes.scores[sessionAttributes.answeringPlayer] = 1;
-          }
-
-          let messageKey = sessionAttributes.STATE === settings.STATE.BUTTONLESS_GAME_STATE ?
-            'SINGLE_PLAYER_CORRECT_ANSWER_DURING_PLAY' : 'CORRECT_ANSWER_DURING_PLAY';
-          let responseMessage = ctx.t(messageKey, {
-            player_number: sessionAttributes.answeringPlayer
-          });
-
-          // To change the correct answer sound, replace AUDIO.CORRECT_ANSWER_AUDIO
-          // with your audio clip by updating config/settings.js
-          ctx.outputSpeech.push(settings.AUDIO.CORRECT_ANSWER_AUDIO);
-          ctx.outputSpeech.push(responseMessage.outputSpeech)
-          // mark that the user answered this correct
-          sessionAttributes.correct = true;
-
-          // if we are asking this question for the Nth time, where N > 1, delete that flag
-          delete sessionAttributes.repeat;
-          delete sessionAttributes.incorrectAnswerButtons;
-
-          logger.debug("Answer provided matched one of the expected answers!");
+    // Check to see if we have the correct answer
+    let answered = false;
+    if (settings.GAME.MULTIPLE_CHOICE === true){
+      let matches = stringSimilarity.findBestMatch(answer, answers);
+      logger.debug('Looking for correct answer \'' + correct_answer + '\' exceeding settings threshold of ' +
+        settings.GAME.ANSWER_SIMILARITY + ' in \n' + JSON.stringify(matches, null, 2));
+      // loop through all the matches, in case there is more than one that is good enough to consider
+      for (var i = 0; i < matches.ratings.length; ++i) {
+        let match = matches.ratings[i];
+        if (match.rating >= settings.GAME.ANSWER_SIMILARITY && match.target === correct_answer) {
           answered = true;
           break;
         }
       }
+    } else {
+      let answerSimilarity = stringSimilarity.compareTwoStrings(correct_answer, answer);
+      logger.debug('Comparing answer \'' + answer + '\' to correnct answer \'' +
+        correct_answer + '\' yields similarity of ' + answerSimilarity +
+        ' vs settings threshold of ' + settings.GAME.ANSWER_SIMILARITY);
+      if (answerSimilarity >= settings.GAME.ANSWER_SIMILARITY) {
+        answered = true;
+      }
     }
-    // If we looped through the answer without a match
-    if (answered === false) {
+
+
+    if (answered === true){
+      // CORRECT ANSWER GIVEN
+
+      // move onto the next question
+      sessionAttributes.currentQuestion += 1;
+
+      // check to see if we are keeping score yet
+      if (!('scores' in sessionAttributes)) {
+        sessionAttributes.scores = {};
+        sessionAttributes.scores[sessionAttributes.answeringPlayer] = 1;
+        // if this player already has a score, increment it
+      } else if (sessionAttributes.answeringPlayer in sessionAttributes.scores) {
+        sessionAttributes.scores[sessionAttributes.answeringPlayer] += 1;
+        // otherwise just start a new score
+      } else {
+        sessionAttributes.scores[sessionAttributes.answeringPlayer] = 1;
+      }
+
+      let messageKey = sessionAttributes.STATE === settings.STATE.BUTTONLESS_GAME_STATE ?
+        'SINGLE_PLAYER_CORRECT_ANSWER_DURING_PLAY' : 'CORRECT_ANSWER_DURING_PLAY';
+      let responseMessage = ctx.t(messageKey, {
+        player_number: sessionAttributes.answeringPlayer
+      });
+
+      // To change the correct answer sound, replace AUDIO.CORRECT_ANSWER_AUDIO
+      // with your audio clip by updating config/settings.js
+      ctx.outputSpeech.push(settings.AUDIO.CORRECT_ANSWER_AUDIO);
+      ctx.outputSpeech.push(responseMessage.outputSpeech)
+      // mark that the user answered this correct
+      sessionAttributes.correct = true;
+
+      // if we are asking this question for the Nth time, where N > 1, delete that flag
+      delete sessionAttributes.repeat;
+      delete sessionAttributes.incorrectAnswerButtons;
+
+      logger.debug("Answer provided matched one of the expected answers!");
+    } else {
+      // INCORRECT ANSWER GIVEN
+
       if (sessionAttributes.STATE === settings.STATE.BUTTONLESS_GAME_STATE) {
         // In a buttonless game we will not repeat the question, just mark is wrong and move to the next one
         sessionAttributes.currentQuestion += 1;
@@ -688,6 +701,7 @@ const Game = {
         let responseMessage = ctx.t(messageKey);
         ctx.render(handlerInput, responseMessage);
       }
+      ctx.outputSpeech.push(nextQuestion.question);
 
       // Use a shorter break for buttonless games
       let breakTime = sessionAttributes.STATE === settings.STATE.BUTTON_GAME_STATE ? 4 : 1;
@@ -701,14 +715,21 @@ const Game = {
         }
         answers += "?";
       }
-      ctx.outputSpeech.push(nextQuestion.question);
-      ctx.outputSpeech.push(answers);
+
+      // Add answers if multiple choice
+      if (settings.GAME.MULTIPLE_CHOICE === true) {
+        ctx.outputSpeech.push(answers);
+      }
 
       // add waiting sound only for button games, add a reprompt for buttonless
       if (sessionAttributes.STATE === settings.STATE.BUTTON_GAME_STATE) {
         ctx.outputSpeech.push(settings.AUDIO.WAITING_FOR_BUZZ_IN_AUDIO);
       } else {
-        ctx.reprompt.push(answers);
+        if (settings.GAME.MULTIPLE_CHOICE === true) {
+          ctx.reprompt.push(answers);
+        } else {
+          ctx.reprompt.push(nextQuestion.question);
+        }
       }
 
       if (sessionAttributes.STATE === settings.STATE.BUTTON_GAME_STATE){

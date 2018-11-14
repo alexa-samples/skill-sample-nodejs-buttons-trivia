@@ -42,6 +42,9 @@ module.exports = (function () {
    *          each question is presented in the same answer as they are listed in the questions file.
    *      NOTIFY_CORRECT_ANSWER - if enabled Alexa will let the players know what the correct answer
    *          was if everyone has answered incorrectly
+   *      MULTIPLE_CHOICE - Offer answer options as defined in the answers array in question.js. If
+   *          this is false only the question will be asked with the answer compared directly against
+   *          correct_answer from questions.js.
    */
   const GAME_OPTIONS = {
     MAX_PLAYERS: 4,
@@ -50,7 +53,8 @@ module.exports = (function () {
     ANSWER_SIMILARITY: .60,
     MAX_ANSWERS_PER_QUESTION: 4,
     SHUFFLE_QUESTIONS: true,
-    NOTIFY_CORRECT_ANSWER: true
+    NOTIFY_CORRECT_ANSWER: true,
+    MULTIPLE_CHOICE: true
   };
 
   /**
