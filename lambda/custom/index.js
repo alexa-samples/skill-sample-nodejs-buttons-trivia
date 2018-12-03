@@ -42,6 +42,7 @@ exports.handler = function (event, context) {
       StartHandlers.NoHandler,
       StartHandlers.LaunchPlayGameHandler,
       StartHandlers.StartNewGameHandler,
+      GlobalHandlers.NumericResponseHandler,
       GlobalHandlers.HelpHandler,
       GlobalHandlers.StopCancelHandler,
       GlobalHandlers.SessionEndedRequestHandler,

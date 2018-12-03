@@ -17,6 +17,8 @@ const logger = require('../utils/logger.js');
 const messages = require('../config/messages.js');
 const settings = require('../config/settings.js');
 const Game = require('../utils/game.js');
+const startHandlers = require('./startHandlers.js');
+const gameHandlers = require('./gamePlayHandlers.js');
 
 const globalHandlers = {
   RequestInterceptor: {
@@ -168,7 +170,7 @@ const globalHandlers = {
       attributesManager.setPersistentAttributes(sessionAttributes);
       await attributesManager.savePersistentAttributes();
       logger.debug('----- NEW PERSISTENT ATTRIBUTES -----');
-      logger.debug(JSON.stringify(persistentAtttributes, null, 2));
+      logger.debug(JSON.stringify(attributesManager.getPersistentAttributes(), null, 2));
 
       /**
        * Log the attributes and response for debug purposes.
@@ -177,6 +179,29 @@ const globalHandlers = {
       logger.debug(JSON.stringify(response, null, 2));
 
       return response;
+    }
+  },
+  NumericResponseHandler: {
+    /**
+     * Handle numeric responses in one place and then route to the appropriate logic based on state.
+     */
+    canHandle(handlerInput) {
+      logger.debug('Global.NumericResponseIntentHandler: canHandle');
+      return handlerInput.requestEnvelope.request.type === 'IntentRequest' &&
+        handlerInput.requestEnvelope.request.intent.name === 'NumericResponseIntent'
+    },
+    handle(handlerInput) {
+      logger.debug('Global.NumericResponseIntentHandler: handle');
+      let sessionAttributes = handlerInput.attributesManager.getSessionAttributes();
+
+      if (sessionAttributes.STATE === settings.STATE.START_GAME_STATE) {
+        return startHandlers.PlayerCountHandler.handle(handlerInput);
+      } else if (sessionAttributes.STATE === settings.STATE.BUTTON_GAME_STATE ||
+        sessionAttributes.STATE === settings.STATE.BUTTONLESS_GAME_STATE) {
+        return gameHandlers.AnswerHandler.handle(handlerInput);
+      } else {
+        return globalHandlers.DefaultHandler.handle(handlerInput);
+      }
     }
   },
   DefaultHandler: {

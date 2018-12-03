@@ -442,8 +442,12 @@ const Game = {
       return;
     }
 
-    // get the answer out of the request event
-    let answer = gameHelper.normalizeAnswer(requestEnvelope.request.intent.slots.answers.value);
+    // get the answer out of the request event - could come from the numeric handler
+    let answer = requestEnvelope.request.intent.slots.answers ?
+      requestEnvelope.request.intent.slots.answers.value :
+      requestEnvelope.request.intent.slots.digit ?
+      requestEnvelope.request.intent.slots.digit.value : '';
+    answer = gameHelper.normalizeAnswer(answer);
 
     if (answer == '') {
       delete sessionAttributes.correct;

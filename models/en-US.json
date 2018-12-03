@@ -33,19 +33,19 @@
           "name": "PlayerCount",
           "slots": [
             {
-              "name": "players",
+              "name": "digit",
               "type": "AMAZON.NUMBER"
             }
           ],
           "samples": [
-            "{players} players",
-            "there are {players}",
-            "there are {players} players",
-            "there are {players} of us",
-            "we have {players}",
-            "we have {players} players",
-            "there will be {players}",
-            "there will be {players} players"
+            "{digit} players",
+            "there are {digit}",
+            "there are {digit} players",
+            "there are {digit} of us",
+            "we have {digit}",
+            "we have {digit} players",
+            "there will be {digit}",
+            "there will be {digit} players"
           ]
         },
         {
@@ -185,15 +185,15 @@
           "samples": []
         },
         {
-          "name": "PlayerCountOnly",
+          "name": "NumericResponseIntent",
           "slots": [
             {
-              "name": "players",
+              "name": "digit",
               "type": "AMAZON.NUMBER"
             }
           ],
           "samples": [
-            "{players}"
+            "{digit}"
           ]
         }
       ],

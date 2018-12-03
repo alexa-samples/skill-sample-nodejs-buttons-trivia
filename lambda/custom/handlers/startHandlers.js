@@ -91,6 +91,10 @@ const startHandlers = {
     }
   },
   PlayerCountHandler: {
+    /**
+     * Occasionally a mispronounced number might fall into an answer question intent.
+     * We'll be open to that possibility here and do our best to handle.
+     */
     canHandle(handlerInput) {
       logger.debug('START.PlayerCountHandler: canHandle');
       let {
@@ -99,7 +103,8 @@ const startHandlers = {
       } = handlerInput;
       return requestEnvelope.request.type === 'IntentRequest' &&
         (requestEnvelope.request.intent.name === 'PlayerCount' ||
-        requestEnvelope.request.intent.name === 'PlayerCountOnly') &&
+        requestEnvelope.request.intent.name === 'AnswerQuestionIntent' ||
+        requestEnvelope.request.intent.name === 'AnswerOnlyIntent') &&
         attributesManager.getSessionAttributes().STATE === settings.STATE.START_GAME_STATE;
     },
     handle(handlerInput) {
@@ -112,9 +117,16 @@ const startHandlers = {
       let sessionAttributes = attributesManager.getSessionAttributes();
       let ctx = attributesManager.getRequestAttributes();
 
-      sessionAttributes.playerCount = requestEnvelope.request.intent.slots.players && 
-        !isNaN(requestEnvelope.request.intent.slots.players.value) ?
-        parseInt(requestEnvelope.request.intent.slots.players.value, 10) : 0;
+      // Pull the value, could be from answer or digit
+      let playerCountResponse = requestEnvelope.request.intent.slots.answers ?
+        requestEnvelope.request.intent.slots.answers.value :
+        (requestEnvelope.request.intent.slots.digit ?
+        requestEnvelope.request.intent.slots.digit.value : '');
+
+      logger.info('PlayerCount response is \'' + playerCountResponse + '\'');
+
+      sessionAttributes.playerCount = !isNaN(playerCountResponse) ?
+        parseInt(playerCountResponse, 10) : 0;
 
       let validPlayerCount = sessionAttributes.playerCount &&
         (sessionAttributes.playerCount <= settings.GAME.MAX_PLAYERS) && (sessionAttributes.playerCount > 0);
