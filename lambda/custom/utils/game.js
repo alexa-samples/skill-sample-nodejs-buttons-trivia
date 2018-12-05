@@ -379,7 +379,10 @@ const Game = {
           let responseMessage = ctx.t('ASK_QUESTION_DISPLAY', {
             question_number: currentQuestion
           });
-          responseMessage.displayText = triviaQuestion.question;
+          
+          // take the question text and remove any HTML tags - those would cause the render template directive to fail 
+          let scrubbedQuestionText = triviaQuestion.question.replace(/<[^>]+>/gm,'');
+          responseMessage.displayText = scrubbedQuestionText;
           ctx.render(handlerInput, responseMessage);
 
           Game.listenForAnswer(handlerInput);
@@ -705,8 +708,9 @@ const Game = {
         let responseMessage = ctx.t(messageKey);
         ctx.render(handlerInput, responseMessage);
       }
+      
       ctx.outputSpeech.push(nextQuestion.question);
-
+      
       // Use a shorter break for buttonless games
       let breakTime = sessionAttributes.STATE === settings.STATE.BUTTON_GAME_STATE ? 4 : 1;
       let answers = `<break time='${breakTime}s'/> Is it `;
