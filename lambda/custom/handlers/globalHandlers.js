@@ -142,8 +142,8 @@ const globalHandlers = {
         if (ctx.openMicrophone) {
           /**
            * setting shouldEndSession = false - lets Alexa know that we want an answer from the user
-           * see: https://developer.amazon.com/docs/gadget-skills/receive-voice-input.html#open
-           *      https://developer.amazon.com/docs/gadget-skills/keep-session-open.html
+           * see: https://developer.amazon.com/docs/echo-button-skills/receive-voice-input.html#open
+           *      https://developer.amazon.com/docs/echo-button-skills/keep-session-open.html
            */
           response.shouldEndSession = false;
           logger.debug('Global.ResponseInterceptor: request to open microphone -> shouldEndSession = false');
@@ -155,7 +155,7 @@ const globalHandlers = {
             /**
              * deleting shouldEndSession will keep the skill session going,
              * while the input handler is active, waiting for button presses
-             * see: https://developer.amazon.com/docs/gadget-skills/keep-session-open.html
+             * see: https://developer.amazon.com/docs/echo-button-skills/keep-session-open.html
              */
             delete response.shouldEndSession;
           }
@@ -338,7 +338,7 @@ const globalHandlers = {
 
       /**
        *  setting shouldEndSession = true  -  lets Alexa know that the skill is done
-       *  see: https://developer.amazon.com/docs/gadget-skills/receive-voice-input.html
+       *  see: https://developer.amazon.com/docs/echo-button-skills/receive-voice-input.html
        */
       let response = responseBuilder.getResponse();
       response.shouldEndSession = true;

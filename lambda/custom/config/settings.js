@@ -213,7 +213,7 @@ module.exports = (function () {
    */
   const SKILL_STATES = {
     // Start mode performs roll call and button registration.
-    // https://developer.amazon.com/docs/gadget-skills/discover-echo-buttons.html
+    // https://developer.amazon.com/docs/echo-button-skills/discover-echo-buttons.html
     START_GAME_STATE: '',
     ROLLCALL_STATE: '_ROLLCALL',
     BUTTON_GAME_STATE: '_BUTTON_GAME',

@@ -212,7 +212,7 @@ const gameHelper = {
  *      any accumulated speech to the response.
  *  2) Find the next question from the ../config/questions.js library
  *  3) Ask the question and return a GameEngine.StartInputHandler directive
- *      https://developer.amazon.com/docs/gadget-skills/receive-echo-button-events.html
+ *      https://developer.amazon.com/docs/echo-button-skills/receive-echo-button-events.html
  *  4) When a button event comes in, send a voice prompt using the answerQuestion method
  *  5) Process the input, collect the right/wrong verbal response
  *  6) Pass this accumulated speech to the loop and start at the beginning of loop
@@ -313,7 +313,7 @@ const Game = {
   handleGameInputEvent: function (handlerInput) {
     /**
      * For format of the GameEngine.InputHandlerEvent see
-     * https://developer.amazon.com/docs/gadget-skills/receive-echo-button-events.html#receive
+     * https://developer.amazon.com/docs/echo-button-skills/receive-echo-button-events.html#receive
      */
     let {
       requestEnvelope,
