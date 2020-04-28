@@ -62,9 +62,6 @@
     },
     "apis": {
       "custom": {
-        "endpoint": {
-          "sourceDir": "lambda/custom"
-        },
         "interfaces": [
           {
             "type": "RENDER_TEMPLATE"
@@ -75,19 +72,7 @@
           {
             "type": "GADGET_CONTROLLER"
           }
-        ],
-        "regions": {
-          "NA": {
-            "endpoint": {
-              "sourceDir": "lambda/custom"
-            }
-          },
-          "EU": {
-            "endpoint": {
-              "sourceDir": "lambda/custom"
-            }
-          }
-        }
+        ]
       }
     },
     "manifestVersion": "1.0"
